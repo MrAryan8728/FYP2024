@@ -19,7 +19,7 @@ const page = () => {
   return (
     <div className=" grid grid-cols-4 gap-3">
       {data.map((data) => {
-        return <Link href={`/campaign/${data.id}`}><Card key={data.id} name={data.title} desc={data.body}/></Link>;
+        return <div key={data.id}><Link href={`/campaign/${data.id}`}><Card name={data.title} desc={data.body}/></Link></div>;
       })}
     </div>
   );

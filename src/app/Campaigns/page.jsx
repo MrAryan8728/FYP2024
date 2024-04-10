@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Card from "@/components/Card";
-import Loader from "@/components/Loader";
+import Shimmer from "@/components/Shimmer";
 import Link from 'next/link'
 
 const page = () => {
@@ -15,12 +15,21 @@ const page = () => {
     const json = await data.json();
     setData(json);
   };
-  {(data.length == 0)&&<Loader/>}
   return (
     <div className=" grid grid-cols-4 gap-3">
-      {data.map((data) => {
-        return <div key={data.id}><Link href={`/campaign/${data.id}`}><Card name={data.title} desc={data.body}/></Link></div>;
-      })}
+      {data.length === 0 ? (
+        <div className=" col-span-4">
+        <Shimmer/>
+        </div>
+      ) : 
+        data.map((dataItem) => (
+          <div key={dataItem.id}>
+            <Link href={`/campaign/${dataItem.id}`}>
+              <Card name={dataItem.title} desc={dataItem.body} />
+            </Link>
+          </div>
+        ))
+      }
     </div>
   );
 };

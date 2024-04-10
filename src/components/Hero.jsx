@@ -1,6 +1,7 @@
 "use client"
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link'
 import { Typewriter } from 'react-simple-typewriter';
 
 const Hero = () => {
@@ -30,12 +31,12 @@ const Hero = () => {
         <div className='mt-5'>
           <p>Hello guy I am a paragraph explaining us. How we work and function.</p>
           <div className='flex flex-col lg:flex-row gap-5 items-start lg:items-baseline mt-6 lg:mt-12'>
-            <button className='font-bold text-xl lg:text-2xl text-white rounded-md border bg-primary px-6 py-3 hover:bg-secondary'>
+            <Link href='/Campaigns'><button className='font-bold text-xl lg:text-2xl text-white rounded-md border bg-primary px-6 py-3 hover:bg-secondary'>
               Contribute Now
-            </button>
-            <button className='font-thin text-xl lg:text-2xl text-gray-600 underline'>
+            </button></Link>
+            <Link href='/CreateCampaign'><button className='font-thin text-xl lg:text-2xl text-gray-600 underline'>
               Become a Campaigner
-            </button>
+            </button></Link>
           </div>
         </div>
       </div>

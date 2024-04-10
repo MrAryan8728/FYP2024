@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 
 const Abovefooter = () => {
   return (
@@ -13,8 +14,8 @@ const Abovefooter = () => {
         </div>
         {/* for buttons */}
         <div>
-            <button className=' font-bold px-4 py-2 text-2xl rounded-md border-x-2 border-y-4 border-white bg-primary text-white mx-3 hover:bg-white hover:text-primary'>Become a Campaigner</button>
-            <button className=' font-bold  border-x-2 border-y-4 border-white px-4 py-2 text-2xl rounded-md bg-white text-primary mx-3 hover:bg-primary hover:text-white'>Contribute Now</button>
+            <Link href='/CreateCampaign'><button className=' font-bold px-4 py-2 text-2xl rounded-md border-x-2 border-y-4 border-white bg-primary text-white mx-3 hover:bg-white hover:text-primary'>Become a Campaigner</button></Link>
+            <Link href='/Campaigns'><button className=' font-bold  border-x-2 border-y-4 border-white px-4 py-2 text-2xl rounded-md bg-white text-primary mx-3 hover:bg-primary hover:text-white'>Contribute Now</button></Link>
         </div>
     </div>
   )

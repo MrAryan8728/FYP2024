@@ -1,5 +1,6 @@
 "use client"
-import React,{useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
+import Shimmer from './Shimmer';
 import Card from './Card';
 import Link from 'next/link';
 
@@ -19,18 +20,24 @@ const CardContainer = () => {
 
   return (
     <div className='my-12'>
-      <h1 className='font-semibold text-3xl text-gray-500 my-6'>
+      <h1 className=' text-center font-semibold text-3xl text-gray-500 my-12'>
         Our Recent <span className='font-bold text-primary'>Campaigns</span>
       </h1>
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[75rem] mx-auto'>
         {
-          data.map((val, index) => {
-            if(index < 6){
-            return (<div key={index}>
-              <Link href={`/campaign/${val.id}`}><Card name = {val.title} desc = {val.body}/></Link>
-            </div>);
-            }
-          })
+          (data.length === 0)
+            ? (
+              <div className=" col-span-4">
+                <Shimmer />
+              </div>
+            ) :
+            data.map((val, index) => {
+              if (index < 6) {
+                return (<div key={index}>
+                  <Link href={`/campaign/${val.id}`}><Card name={val.title} desc={val.body} /></Link>
+                </div>);
+              }
+            })
         }
       </div>
       <a href='/Campaigns' target='_blank'><h1 className=' text-center font-bold mt-5 text-gray-600'>See More...</h1></a>

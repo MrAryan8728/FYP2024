@@ -71,11 +71,12 @@ export const Header = () => {
     };
   }, [isOpen, display]);
 
-  let ethereum;
+  let ethereum = useRef(null);
 
   useEffect(() => {
-    if (typeof window != null) {
-      ethereum = window.ethereum;
+    if (ethereum.current === null) {
+      ethereum.current = window.ethereum;
+      console.log(ethereum);
     }
     const acc = localStorage.getItem("account");
     if (acc === null) {
@@ -98,15 +99,15 @@ export const Header = () => {
 
   const connect = async () => {
     setWalletConnecting(true);
-    if (typeof ethereum === "undefined") {
+    if (typeof ethereum.current === null) {
       toast.error("Install Metamask first");
     } else {
       try {
-        await ethereum.request({ method: "eth_requestAccounts" });
-        const provider = new BrowserProvider(ethereum);
+        await ethereum.current.request({ method: "eth_requestAccounts" });
+        const provider = new BrowserProvider(ethereum.current);
 
         if (provider.network !== "sepolia") {
-          await ethereum.request({
+          await ethereum.current.request({
             method: "wallet_addEthereumChain",
             params: [
               {

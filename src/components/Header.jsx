@@ -5,7 +5,7 @@ import { MdArrowDropDown, MdArrowDropUp } from "react-icons/md";
 import { BrowserProvider } from "ethers";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation";
 
 const networks = {
   sepolia: {
@@ -43,8 +43,6 @@ const networks = {
   },
 };
 
-const { ethereum } = window;
-
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -54,7 +52,7 @@ export const Header = () => {
   const [walletConnecting, setWalletConnecting] = useState(false);
   const dropdownRef = useRef(null);
 
-  const router = useRouter()  
+  const router = useRouter();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -73,7 +71,12 @@ export const Header = () => {
     };
   }, [isOpen, display]);
 
+  let ethereum;
+
   useEffect(() => {
+    if (typeof window != null) {
+      ethereum = window.ethereum;
+    }
     const acc = localStorage.getItem("account");
     if (acc === null) {
       setAddress("");
@@ -184,60 +187,60 @@ export const Header = () => {
           </button>
         </Link>
         {address === "" ? (
-            !walletConnecting ? (
-              <button
-                className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
-                onClick={connect}
-              >
-                Connect wallet
-              </button>
-            ) : (
-              <button
-                className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
-                onClick={falseClick}
-              >
-                Connect wallet
-              </button>
-            )
+          !walletConnecting ? (
+            <button
+              className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
+              onClick={connect}
+            >
+              Connect wallet
+            </button>
           ) : (
-            <div className="flex justify-center items-center" ref={dropdownRef}>
-              <div className=" border-2 border-fourth px-4 py-2">
-                {address.slice(0, 6)}.......{address.slice(address.length - 4)}
-              </div>
-              {isArrowDown ? ( // Using isArrowDown state to toggle between dropdown and dropup icons
-                <MdArrowDropDown // Displaying MdArrowDropDown icon when isArrowDown is true
-                  className="text-lg cursor-pointer"
-                  onClick={() => {
-                    toggleArrow();
-                    toggleDisplay();
-                  }}
-                />
-              ) : (
-                <MdArrowDropUp // Displaying MdArrowDropUp icon when isArrowDown is false
-                  className="text-lg cursor-pointer"
-                  onClick={() => {
-                    toggleArrow();
-                    toggleDisplay();
-                  }}
-                />
-              )}
-              {display && (
-                <div className="absolute top-[80%] right-1 flex flex-col bg-gray-300 text-gray-600 p-2 rounded-md">
-                  <Link href="/dashboard">
-                    <div className="pl-2 cursor-pointer hover:font-bold mb-2">
-                      Dashboard
-                    </div>
-                  </Link>
-                  <button
-                    className="bg-primary text-white font-bold p-2 rounded-md hover:bg-secondary"
-                    onClick={disconnect}
-                  >
-                    Disconnect wallet
-                  </button>
-                </div>
-              )}
+            <button
+              className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
+              onClick={falseClick}
+            >
+              Connect wallet
+            </button>
+          )
+        ) : (
+          <div className="flex justify-center items-center" ref={dropdownRef}>
+            <div className=" border-2 border-fourth px-4 py-2">
+              {address.slice(0, 6)}.......{address.slice(address.length - 4)}
             </div>
-          )}
+            {isArrowDown ? ( // Using isArrowDown state to toggle between dropdown and dropup icons
+              <MdArrowDropDown // Displaying MdArrowDropDown icon when isArrowDown is true
+                className="text-lg cursor-pointer"
+                onClick={() => {
+                  toggleArrow();
+                  toggleDisplay();
+                }}
+              />
+            ) : (
+              <MdArrowDropUp // Displaying MdArrowDropUp icon when isArrowDown is false
+                className="text-lg cursor-pointer"
+                onClick={() => {
+                  toggleArrow();
+                  toggleDisplay();
+                }}
+              />
+            )}
+            {display && (
+              <div className="absolute top-[80%] right-1 flex flex-col bg-gray-300 text-gray-600 p-2 rounded-md">
+                <Link href="/dashboard">
+                  <div className="pl-2 cursor-pointer hover:font-bold mb-2">
+                    Dashboard
+                  </div>
+                </Link>
+                <button
+                  className="bg-primary text-white font-bold p-2 rounded-md hover:bg-secondary"
+                  onClick={disconnect}
+                >
+                  Disconnect wallet
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Hamburger icon */}

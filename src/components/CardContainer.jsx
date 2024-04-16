@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import Shimmer from "./Shimmer";
 import Card from "./Card";
 import Link from "next/link";
-// import CampaignFactory from "../../artifacts/contracts/Campaign.sol/CampaignFactory.json";
 import CampaignFactory from "../../artifacts/contracts/Campaign.sol/CampaignFactory.json";
 import { Contract, JsonRpcProvider } from "ethers";
 

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Card from "@/components/Card";
 import Shimmer from "@/components/Shimmer";
-import Link from 'next/link'
+import Link from "next/link";
 import CampaignFactory from "../../../artifacts/contracts/Campaign.sol/CampaignFactory.json";
 import { Contract, JsonRpcProvider } from "ethers";
 
@@ -38,7 +38,7 @@ const page = () => {
       ) : (
         data.map((val, index) => {
           return (
-            <Link href={`/campaign/${val.id}`} key={index}>
+            <Link href={`/campaign/${val.args.campaignAddress}`} key={index}>
               <Card
                 name={val.args.title}
                 desc={val.args.desc}

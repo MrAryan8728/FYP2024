@@ -23,6 +23,11 @@ const InitCamp = () => {
       toast.success("Uploaded Successfully !")
       setCid(resData.IpfsHash);
       setUploading(false);
+      setFormData((prevState) => ({
+      ...prevState,
+      imgURI: cid
+    }));
+
     } catch (e) {
       console.log(e);
       setUploading(false);
@@ -49,7 +54,6 @@ const InitCamp = () => {
       category: "",
       country: "",
     });
-    console.log(formData);
     toast.success("Campaign Started Successfully")
   };
   const falseSubmit = () => {
@@ -69,7 +73,6 @@ const InitCamp = () => {
   };
   const ImageChangeHandler = (e) => {
     setFile(e.target.files[0]);
-    console.log(e.target.files[0]);
     uploadFile(e.target.files[0]);
   };
   return (

@@ -3,12 +3,14 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from 'next/navigation';
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // You can add form submission logic here, like sending the login credentials to a server.
 
@@ -16,8 +18,27 @@ const LoginPage = () => {
       toast.error("All fields are Mandatory")
       return;
     }
-    console.log("Email:", email);
-    console.log("Password:", password);
+
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password} ),
+      });
+      console.log(response);
+      if (!response.ok) {
+        toast.error('Login failed');
+        return;
+      }
+
+      const data = await response.json(); // Clear any previous errors
+
+      // Handle successful login (e.g., set session or JWT token)
+      router.push('/dashboard'); // Redirect to a protected page
+
+    } catch (error) {
+      console.error(error);
+    }
 
     setEmail("")
     setPassword("")

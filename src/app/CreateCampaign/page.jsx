@@ -1,14 +1,33 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+// import CampaignFactory from "../../artifacts/contracts/Campaign.sol/CampaignFactory.json";
+import CampaignFactory from "../../../artifacts/contracts/Campaign.sol/CampaignFactory.json";
+import { useRouter } from "next/navigation";
+const {
+  ethers,
+  JsonRpcProvider,
+  Contract,
+  BrowserProvider,
+} = require("ethers");
 
 const InitCamp = () => {
   const [file, setFile] = useState("");
   const [cid, setCid] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    desc: "",
+    target: 1,
+    imgURI: "",
+    category: "",
+    country: "",
+  });
 
-  const inputFile = useRef(null);
+  const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+  const RPC = process.env.NEXT_PUBLIC_RPC_URL;
+  const router = useRouter();
 
   const uploadFile = async (fileToUpload) => {
     try {
@@ -20,14 +39,15 @@ const InitCamp = () => {
         body: data,
       });
       const resData = await res.json();
-      toast.success("Uploaded Successfully !")
-      setCid(resData.IpfsHash);
+      toast.success("Uploaded Successfully !");
+      const ipfsHash = await resData.IpfsHash;
+      console.log(ipfsHash);
+      // setCid(resData.IpfsHash);
       setUploading(false);
       setFormData((prevState) => ({
-      ...prevState,
-      imgURI: cid
-    }));
-
+        ...prevState,
+        imgURI: ipfsHash,
+      }));
     } catch (e) {
       console.log(e);
       setUploading(false);
@@ -35,26 +55,38 @@ const InitCamp = () => {
     }
   };
 
-
-  const [formData, setFormData] = useState({
-    title: "",
-    desc: "",
-    target: 1,
-    imgURI: "",
-    category: "",
-    country: "",
-  });
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormData({
-      title: "",
-      desc: "",
-      target: 1,
-      imgURI: cid,
-      category: "",
-      country: "",
-    });
-    toast.success("Campaign Started Successfully")
+    try {
+      let ethereum;
+      if (typeof window !== undefined) ethereum = window.ethereum;
+      const walletProvider = new BrowserProvider(ethereum);
+      const signer = await walletProvider.getSigner();
+      const contract = new Contract(
+        contractAddress,
+        CampaignFactory.abi,
+        signer
+      );
+      const campaignData = await contract.createCampaign(
+        formData.title,
+        formData.desc,
+        parseInt(formData.target),
+        formData.imgURI,
+        formData.category,
+        formData.country,
+        parseInt(45)
+      );
+      await campaignData.wait();
+      console.log(campaignData.to);
+      toast.success("Campaign Started Successfully");
+      router.push("/");
+    } catch (error) {
+      // console.error("Error:", error);
+      toast.error(
+        "An error occurred while starting the campaign. Try again after some time"
+      );
+      // setTimeout(() => window.location.reload(), 3000);
+    }
   };
   const falseSubmit = () => {
     if (formData.title === "") toast.error("Name must not be empty");
@@ -133,7 +165,7 @@ const InitCamp = () => {
       <div className="px-2">
         <div className="mb-4">
           <label htmlFor="imgURI" className="leading-7 text-sm text-gray-600">
-            Select project's image
+            Select project image
           </label>
           <div className=" flex">
             <input
@@ -142,21 +174,34 @@ const InitCamp = () => {
               id="imgURI"
               name="imgURI"
               onChange={ImageChangeHandler}
-              value={formData.imgURI}
+              // value={formData.imgURI}
               className="w-[90%] cursor-pointer bg-white rounded border border-third focus:border-third focus:ring-2 focus:ring-indigo-200 text-base outline-none text-second py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
             />
-            {cid === "" ? (
-              file.length === 0 ?
-              <button className=" bg-primary text-white px-3 ml-3 rounded-md font-bold" onClick={() => {
-                toast.error("Choose an Image")
-              }}>Choose</button>
-               : 
-              <button className=" bg-primary text-white px-3 ml-3 rounded-md font-bold" onClick={() => {
-                uploadFile(file)
-              }}>Upload
-              </button> 
+            {formData.imgURI === "" ? (
+              file.length === 0 ? (
+                <button
+                  className=" bg-primary text-white px-3 ml-3 rounded-md font-bold"
+                  onClick={() => {
+                    toast.error("Choose an Image");
+                  }}
+                >
+                  Choose
+                </button>
+              ) : (
+                <button
+                  className=" bg-primary text-white px-3 ml-3 rounded-md font-bold"
+                  onClick={() => {
+                    uploadFile(file);
+                  }}
+                >
+                  Upload
+                </button>
+              )
             ) : (
-              <button className=" bg-primary text-white px-3 ml-3 rounded-md font-bold" onClick={() => toast.info("Already Uploaded !")}>
+              <button
+                className=" bg-primary text-white px-3 ml-3 rounded-md font-bold"
+                onClick={() => toast.info("Already Uploaded !")}
+              >
                 Uploaded
               </button>
             )}
@@ -195,11 +240,11 @@ const InitCamp = () => {
         </div>
       </div>
       {formData.title === "" ||
-        formData.desc === "" ||
-        formData.target <= 0 ||
-        formData.imgURI === "" ||
-        formData.category === "" ||
-        formData.country === "" ? (
+      formData.desc === "" ||
+      formData.target <= 0 ||
+      formData.imgURI === "" ||
+      formData.category === "" ||
+      formData.country === "" ? (
         <button
           className="bg-primary text-xl uppercase text-white px-8 py-3 max-w-[20%] mx-auto block rounded-md font-bold "
           onClick={falseSubmit}

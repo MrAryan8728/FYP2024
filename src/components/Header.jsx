@@ -187,9 +187,17 @@ export const Header = () => {
             Start a Project
           </button>
         </Link>
-        <Link href='/login'><button className=" bg-primary text-white px-5 py-2 font-bold rounded-md ">Log In</button></Link>
-        <Link href='/register'><button className=" bg-primary text-white px-5 py-2 font-bold rounded-md ">Register</button></Link>
-        {/* {address === "" ? (
+        <Link href="/login">
+          <button className=" bg-primary text-white px-5 py-2 font-bold rounded-md ">
+            Log In
+          </button>
+        </Link>
+        <Link href="/register">
+          <button className=" bg-primary text-white px-5 py-2 font-bold rounded-md ">
+            Register
+          </button>
+        </Link>
+        {address === "" ? (
           !walletConnecting ? (
             <button
               className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
@@ -243,7 +251,7 @@ export const Header = () => {
               </div>
             )}
           </div>
-        )} */}
+        )}
       </div>
 
       {/* Hamburger icon */}

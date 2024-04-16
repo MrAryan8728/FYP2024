@@ -76,7 +76,7 @@ export const Header = () => {
   useEffect(() => {
     if (ethereum.current === null) {
       ethereum.current = window.ethereum;
-      console.log(ethereum);
+      // console.log(ethereum);
     }
     const acc = localStorage.getItem("account");
     if (acc === null) {

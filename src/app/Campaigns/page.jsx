@@ -14,7 +14,7 @@ const page = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
     DataLoader();
-  }, []);
+  }, []); 
 
   const DataLoader = async () => {
     // const data = await fetch("https://jsonplaceholder.typicode.com/posts");

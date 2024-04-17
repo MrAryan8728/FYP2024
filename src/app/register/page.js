@@ -42,7 +42,7 @@ const Signup = () => {
 
       if (response.status === 200) {
         console.log("User registered:");
-        router.push('/login')
+        router.push('/')
       } else {
         console.error("Failed to register user");
       }

@@ -189,12 +189,7 @@ export const Header = () => {
         </Link>
         <Link href="/login">
           <button className=" bg-primary text-white px-5 py-2 font-bold rounded-md ">
-            Log In
-          </button>
-        </Link>
-        <Link href="/register">
-          <button className=" bg-primary text-white px-5 py-2 font-bold rounded-md ">
-            Register
+            LogIn/Register
           </button>
         </Link>
         {address === "" ? (

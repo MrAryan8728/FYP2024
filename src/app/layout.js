@@ -7,6 +7,9 @@ import Footer from "../components/Footer";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { getServerSession } from "next-auth";
+import SessionProvider from "../utils/SessionProvider";
+
 const rubik = Rubik({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800", "900"]
@@ -21,27 +24,30 @@ export const metadata = {
   description: "Decentralized Crowdfunding Platform",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const session = await getServerSession();
   return (
     <html lang="en">
       <body className={(rubik.className, ysabeau_sc.variable)} >
-        <ToastContainer
-          position="top-left"
-          autoClose={3000}
-          hideProgressBar
-          newestOnTop={false}
-          closeOnClick={false}
-          rtl={false}
-          pauseOnFocusLoss={false}
-          draggable={false}
-          pauseOnHover={false}
-          theme="light"
-        />
-        <div className=" max-w-[80rem] mx-auto">
-          <Header />
-          <Providers>{children}</Providers>
-          <Footer />
-        </div>
+        <SessionProvider session={session}>
+          <ToastContainer
+            position="top-left"
+            autoClose={3000}
+            hideProgressBar
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss={false}
+            draggable={false}
+            pauseOnHover={false}
+            theme="light"
+          />
+          <div className=" max-w-[80rem] mx-auto">
+            <Header />
+            <Providers>{children}</Providers>
+            <Footer />
+          </div>
+        </SessionProvider>
       </body>
     </html>
   );

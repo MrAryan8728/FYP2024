@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Card from "@/components/Card";
-import Shimmer from "@/components/Shimmer";
+import Card from "../../components/Card";
+import Shimmer from "../../components/Shimmer";
 import Link from 'next/link'
 import CampaignFactory from "../../../artifacts/contracts/Campaign.sol/CampaignFactory.json";
 import { Contract, JsonRpcProvider } from "ethers";

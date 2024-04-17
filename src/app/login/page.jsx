@@ -1,50 +1,66 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { signIn, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useRouter } from 'next/navigation';
 
 const LoginPage = () => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
+
+  const { data: session, status: sessionStatus } = useSession();
+
+  useEffect(() => {
+    if (sessionStatus === "authenticated") {
+      router.replace("/");
+    }
+  }, [sessionStatus, router]); 
+
+  const isValidEmail = (email) => {
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    return emailRegex.test(email);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // You can add form submission logic here, like sending the login credentials to a server.
 
     if(!email || !password){
       toast.error("All fields are Mandatory")
       return;
     }
 
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password} ),
-      });
-      console.log(response);
-      if (!response.ok) {
-        toast.error('Login failed');
-        return;
-      }
-
-      const data = await response.json(); // Clear any previous errors
-
-      // Handle successful login (e.g., set session or JWT token)
-      router.push('/dashboard'); // Redirect to a protected page
-
-    } catch (error) {
-      console.error(error);
+    if (!isValidEmail(email)) {
+      toast.error("Email is invalid");
+      return;
     }
 
+    const res = await signIn("credentials", {
+      redirect: true,
+      email,
+      password,
+    });
+
+    if (res?.error) {
+      setError("Invalid email or password");
+      if (res?.url) router.replace("/");
+    } else {
+      toast.success("Login Successful")
+      router.push('/')
+    }
+
+  if (sessionStatus === "loading") {
+    return <h1>Loading...</h1>;
+  }
+  
     setEmail("")
     setPassword("")
   }
 
-  return (
+  return(
+    sessionStatus !== "authenticated" && (
     <div className='grid place-items-center h-screen'>
       <div className="p-3 bg-white max-w-md w-full rounded-lg border border-t-2 border-primary">
         <h1 className="font-bold text-3xl my-4 text-center text-gray-600 uppercase">
@@ -89,6 +105,7 @@ const LoginPage = () => {
         </form>
       </div>
     </div>
+ )
   );
 };
 

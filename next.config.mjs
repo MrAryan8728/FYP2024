@@ -6,7 +6,14 @@ const nextConfig = {
             hostname: "ipfs.io",
             port: "",
             // pathname: "/account123/**",
-        }, ],
+        },
+        {
+            protocol: "https",
+            hostname: "drive.google.com",
+            port: "",
+            // pathname: "/account123/**",
+        },
+     ],
     },
 };
 

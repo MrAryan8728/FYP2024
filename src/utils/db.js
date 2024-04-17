@@ -1,15 +1,28 @@
+// utils/db.js
+
 import mongoose from "mongoose";
 
-const connect = async () => {
-  //to check already connected or not?
-  if (mongoose.connections[0].readyState) return;
-//else connect it now.
+let isConnected;
+
+const connectToDatabase = async () => {
+  // Check if we are already connected, if so, return the existing connection
+  if (isConnected) {
+    console.log("Using existing MongoDB connection");
+    return;
+  }
+
+  // If not already connected, establish a new connection
   try {
-    await mongoose.connect(process.env.NEXT_PUBLIC_MONGO_URL);
-    console.log("Mongo Connection successfully established.");
+    const db = await mongoose.connect(process.env.NEXT_PUBLIC_MONGO_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    isConnected = db.connections[0].readyState;
+    console.log("MongoDB connection successfully established");
   } catch (error) {
-    throw new Error("Error connecting to Mongoose");
+    console.error("Error connecting to MongoDB:", error);
+    throw new Error("Error connecting to MongoDB");
   }
 };
 
-export default connect;
+export { connectToDatabase };

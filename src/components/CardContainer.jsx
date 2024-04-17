@@ -45,7 +45,7 @@ const CardContainer = () => {
           data.map((val, index) => {
             if (index < 6) {
               return (
-                <Link href={`/campaign/${val.id}`} key={index}>
+                <Link href={`/campaign/${val.args.campaignAddress}`} key={index}>
                   <Card
                     name={val.args.title}
                     desc={val.args.desc}

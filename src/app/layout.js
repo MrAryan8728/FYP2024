@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import StateProvider from '../components/StateProvider'
 
 import { getServerSession } from "next-auth";
 import SessionProvider from "../utils/SessionProvider";
@@ -29,25 +30,29 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={(rubik.className, ysabeau_sc.variable)} >
-        <SessionProvider session={session}>
-          <ToastContainer
-            position="top-left"
-            autoClose={3000}
-            hideProgressBar
-            newestOnTop={false}
-            closeOnClick={false}
-            rtl={false}
-            pauseOnFocusLoss={false}
-            draggable={false}
-            pauseOnHover={false}
-            theme="light"
-          />
-          <div className=" max-w-[80rem] mx-auto">
-            <Header />
-            <Providers>{children}</Providers>
-            <Footer />
-          </div>
-        </SessionProvider>
+        <StateProvider>
+          <SessionProvider session={session}>
+            <ToastContainer
+              position="top-left"
+              autoClose={3000}
+              hideProgressBar
+              newestOnTop={false}
+              closeOnClick={false}
+              rtl={false}
+              pauseOnFocusLoss={false}
+              draggable={false}
+              pauseOnHover={false}
+              theme="light"
+            />
+            <div className=" max-w-[80rem] mx-auto">
+              <Header />
+              <Providers>
+                {children}
+              </Providers>
+              <Footer />
+            </div>
+          </SessionProvider>
+        </StateProvider>
       </body>
     </html>
   );

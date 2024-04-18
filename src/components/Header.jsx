@@ -6,7 +6,8 @@ import { BrowserProvider } from "ethers";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { toggleStatus } from "../utils/loginSlice";
 
 const networks = {
   sepolia: {
@@ -45,7 +46,7 @@ const networks = {
 };
 
 export const Header = () => {
-  const status = useSelector((state) = state.auth)
+  const status = useSelector((state) => state.auth)
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [display, setDisplay] = useState(false);
@@ -55,6 +56,7 @@ export const Header = () => {
   const dropdownRef = useRef(null);
 
   const router = useRouter();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -85,6 +87,8 @@ export const Header = () => {
       setAddress("");
       localStorage.setItem("account", "");
     } else setAddress(acc);
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+    dispatch(toggleStatus(isLoggedIn));
   }, []);
 
   const toggleMenu = () => {
@@ -184,7 +188,7 @@ export const Header = () => {
 
       {/* for login */}
       <div className="hidden lg:flex gap-5">
-        {status ? (
+        {status === true ? (
           <Link href="/CreateCampaign">
             <button className="border-2 border-primary px-5 py-2 font-bold text-primary rounded hover:bg-primary hover:text-white">
               Start a Project

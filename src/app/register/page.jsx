@@ -33,30 +33,32 @@ const Signup = () => {
     }
 
     try {
-      const response = await fetch("/api/register", { 
+      const response = await fetch("/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
-      const res=await response.json();
-      console.log(res);
+      const res = await response.json();
+      // console.log(res);
 
       if (response.status === 200) {
-        console.log("User registered:");
+        toast.success("User registered:");
         dispatch(toggleStatus(true))
+        localStorage.setItem("account", "");
+        sessionStorage.setItem('isLoggedIn',true);
         router.push('/')
       } else {
-        console.error("Failed to register user");
+        toast.error("Failed to register user");
         dispatch(toggleStatus(false))
       }
     } catch (error) {
-      console.error("Failed to register user:", error);
+      toast.error("Failed to register user:", error);
       dispatch(toggleStatus(false))
     }
 
-    console.log("Form submitted with data:", formData);
+    // console.log("Form submitted with data:", formData);
   };
 
   return (
@@ -98,7 +100,7 @@ const Signup = () => {
               className="w-[90%] border-b-4 bg-white rounded border border-third focus:border-second focus:ring-2 focus:ring-third text-base outline-none text-second py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
             />
           </div>
-          
+
           <div className="px-2">
             <div className="mb-4">
               <label htmlFor="name" className="leading-7 text-sm text-gray-600">

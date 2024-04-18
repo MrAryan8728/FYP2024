@@ -6,42 +6,72 @@ import Campaign from "../../../../artifacts/contracts/Campaign.sol/Campaign.json
 import { Contract, JsonRpcProvider } from "ethers";
 
 export default function Page({ params }) {
-  const [data, setData] = useState([]);
+  const [title, setTitle] = useState("");
+  const [desc, setDesc] = useState("");
+  const [imgURI, setImgURI] = useState("");
+  const [targetAmt, setTargetAmt] = useState();
+  const [amtraised, setAmtraised] = useState();
+  const [contributors, setContributors] = useState();
 
   const RPC = process.env.NEXT_PUBLIC_RPC_URL;
   const provider = new JsonRpcProvider(RPC);
   const campaignAddress = params.address;
   const contract = new Contract(campaignAddress, Campaign.abi, provider);
 
-  const callCamp = async () => {
-    // const vote = await contract.vote(0);
-    // console.log(vote);
+  const getCampaignInfo = async () => {
+    const campTitle = await contract.title();
+    setTitle(campTitle);
+    const campDesc = await contract.desc();
+    setDesc(campDesc);
+    const campImg = await contract.imgURI();
+    setImgURI(campImg);
+    const campTarget = await contract.targetAmt();
+    setTargetAmt(parseInt(campTarget));
+    const campRaised = await contract.amtraised();
+    setAmtraised(parseInt(campRaised));
+    const campContributors = await contract.contributorsCount();
+    setContributors(parseInt(campContributors));
   };
   useEffect(() => {
-    // callCamp();
+    getCampaignInfo();
   }, []);
 
   return (
     <div>
       <div className=" max-w-[70rem] mx-auto h-[100vh]">
         <div className=" text-center my-10">
-          <h1 className=" font-bold text-3xl text-first">Hello</h1>
-          <p className=" text-lg">Hi</p>
+          <h1 className=" font-bold text-3xl text-first">{title}</h1>
+          <p className=" text-lg">{desc}</p>
         </div>
         <div className=" grid grid-cols-3 gap-5">
           {/* For image  */}
           <div className=" col-span-2 bg-white">
-            <Image alt="Img" width={100} height={100} />
+            <Image
+              src={`https://ipfs.io/ipfs/${imgURI}`}
+              alt=""
+              width="1"
+              height="1"
+              layout="responsive"
+              objectFit="contain"
+            />
           </div>
           {/* For Other Options*/}
           <div className=" border-t-4 border-first ">
             <div className=" mt-10 p-4">
-              <h1 className=" font-bold text-2xl  text-first"> US$ 87,604 </h1>
-              <h1> lorem ipsum </h1>
+              <h1 className="font-bold text-2xl  text-first">
+                Total Target : {targetAmt} wei
+              </h1>
+              <h1 className="font-bold text-2xl  text-first">
+                {" "}
+                Amount Raised : {amtraised} wei
+              </h1>
             </div>
             <div className=" my-7 p-4">
-              <h1 className=" font-bold text-2xl text-second"> 1304 </h1>
-              <h1> backers </h1>
+              <h1 className=" font-bold text-2xl text-second">
+                {" "}
+                {contributors}{" "}
+              </h1>
+              <h1> contributors </h1>
             </div>
             <div className=" my-7 p-4">
               <h1 className=" font-bold text-2xl text-second"> 52 </h1>

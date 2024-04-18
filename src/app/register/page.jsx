@@ -47,7 +47,7 @@ const Signup = () => {
         toast.success("User registered:");
         dispatch(toggleStatus(true))
         localStorage.setItem("account", "");
-        sessionStorage.setItem('isLoggedIn',true);
+        localStorage.setItem('isLoggedIn',true);
         router.push('/')
       } else {
         toast.error("Failed to register user");

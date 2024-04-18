@@ -87,7 +87,7 @@ export const Header = () => {
       setAddress("");
       localStorage.setItem("account", "");
     } else setAddress(acc);
-    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
     dispatch(toggleStatus(isLoggedIn));
   }, []);
 

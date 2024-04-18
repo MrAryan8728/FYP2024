@@ -5,12 +5,14 @@ import { useRouter } from 'next/navigation';
 import { signIn, useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useDispatch} from 'react-redux';
+import { toggleStatus } from '../../utils/loginSlice';
 
 const LoginPage = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const dispatch = useDispatch();
   const { data: session, status: sessionStatus } = useSession();
 
   useEffect(() => {
@@ -44,10 +46,11 @@ const LoginPage = () => {
     });
 
     if (res?.error) {
-      setError("Invalid email or password");
-      if (res?.url) router.replace("/");
+      toast.error("Invalid email or password");
+      dispatch(toggleStatus(false))
     } else {
       toast.success("Login Successful")
+      dispatch(toggleStatus(true))
       router.push('/')
     }
 

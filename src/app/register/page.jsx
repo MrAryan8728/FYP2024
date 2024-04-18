@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { toggleStatus } from "../../utils/loginSlice";
 
 
 const Signup = () => {
@@ -16,6 +18,7 @@ const Signup = () => {
   });
 
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -42,12 +45,15 @@ const Signup = () => {
 
       if (response.status === 200) {
         console.log("User registered:");
+        dispatch(toggleStatus(true))
         router.push('/')
       } else {
         console.error("Failed to register user");
+        dispatch(toggleStatus(false))
       }
     } catch (error) {
       console.error("Failed to register user:", error);
+      dispatch(toggleStatus(false))
     }
 
     console.log("Form submitted with data:", formData);

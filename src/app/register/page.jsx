@@ -46,16 +46,20 @@ const Signup = () => {
       if (response.status === 200) {
         toast.success("User registered:");
         dispatch(toggleStatus(true))
-        localStorage.setItem("account", "");
-        localStorage.setItem('isLoggedIn',true);
+        sessionStorage.setItem('isLoggedIn',true);
         router.push('/')
       } else {
         toast.error("Failed to register user");
         dispatch(toggleStatus(false))
+        sessionStorage.setItem('isLoggedIn',false);
       }
     } catch (error) {
       toast.error("Failed to register user:", error);
       dispatch(toggleStatus(false))
+      sessionStorage.setItem('isLoggedIn',false);
+    }
+    finally {
+      localStorage.setItem("account", "");
     }
 
     // console.log("Form submitted with data:", formData);

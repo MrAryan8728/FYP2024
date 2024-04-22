@@ -46,7 +46,7 @@ const networks = {
 };
 
 export const Header = () => {
-  const status = useSelector((state) => state.auth)
+  const status = useSelector((state) => state.auth);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [display, setDisplay] = useState(false);
@@ -87,7 +87,7 @@ export const Header = () => {
       setAddress("");
       localStorage.setItem("account", "");
     } else setAddress(acc);
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const isLoggedIn = localStorage.getItem("isLoggedIn");
     dispatch(toggleStatus(isLoggedIn));
   }, []);
 
@@ -186,75 +186,77 @@ export const Header = () => {
         </Link>
       </div>
 
-      {/* for login */}
       <div className="hidden lg:flex gap-5">
-        {status === true ? (
-          <Link href="/CreateCampaign">
-            <button className="border-2 border-primary px-5 py-2 font-bold text-primary rounded hover:bg-primary hover:text-white">
-              Start a Project
+        {/* for login */}
+        {!status ? (
+          <Link href="/login">
+            <button className=" bg-primary text-white px-5 py-2 font-bold rounded-md ">
+              Login / Register
             </button>
           </Link>
-        )
-          :
-          (
-            <Link href="/login">
-              <button className=" bg-primary text-white px-5 py-2 font-bold rounded-md ">
-                LogIn/Register
-              </button>
-            </Link>
-          )
-        }
-        {address === "" ? (
-          !walletConnecting ? (
-            <button
-              className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
-              onClick={connect}
-            >
-              Connect wallet
-            </button>
-          ) : (
-            <button
-              className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
-              onClick={falseClick}
-            >
-              Connect wallet
-            </button>
-          )
         ) : (
-          <div className="flex justify-center items-center" ref={dropdownRef}>
-            <div className=" border-2 border-fourth px-4 py-2">
-              {address.slice(0, 6)}.......{address.slice(address.length - 4)}
-            </div>
-            {isArrowDown ? ( // Using isArrowDown state to toggle between dropdown and dropup icons
-              <MdArrowDropDown // Displaying MdArrowDropDown icon when isArrowDown is true
-                className="text-lg cursor-pointer"
-                onClick={() => {
-                  toggleArrow();
-                  toggleDisplay();
-                }}
-              />
-            ) : (
-              <MdArrowDropUp // Displaying MdArrowDropUp icon when isArrowDown is false
-                className="text-lg cursor-pointer"
-                onClick={() => {
-                  toggleArrow();
-                  toggleDisplay();
-                }}
-              />
-            )}
-            {display && (
-              <div className="absolute top-[80%] right-1 flex flex-col bg-gray-300 text-gray-600 p-2 rounded-md">
-                <Link href="/dashboard">
-                  <div className="pl-2 cursor-pointer hover:font-bold mb-2">
-                    Dashboard
-                  </div>
-                </Link>
+          <div>
+            {address === "" ? (
+              !walletConnecting ? (
                 <button
-                  className="bg-primary text-white font-bold p-2 rounded-md hover:bg-secondary"
-                  onClick={disconnect}
+                  className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
+                  onClick={connect}
                 >
-                  Disconnect wallet
+                  Connect wallet
                 </button>
+              ) : (
+                <button
+                  className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
+                  onClick={falseClick}
+                >
+                  Connect wallet
+                </button>
+              )
+            ) : (
+              <div className="flex justify-center items-center">
+                <Link href="/CreateCampaign">
+                  <button className="border-2 border-primary px-5 py-2 mr-2 font-bold text-primary rounded hover:bg-primary hover:text-white">
+                    Start a Project
+                  </button>
+                </Link>
+                <div className="flex justify-center items-center">
+                  <div className=" border-2 border-fourth px-4 py-2">
+                    {address.slice(0, 6)}.......
+                    {address.slice(address.length - 4)}
+                  </div>
+                  {isArrowDown ? ( // Using isArrowDown state to toggle between dropdown and dropup icons
+                    <MdArrowDropDown // Displaying MdArrowDropDown icon when isArrowDown is true
+                      className="text-lg cursor-pointer"
+                      onClick={() => {
+                        toggleArrow();
+                        toggleDisplay();
+                      }}
+                    />
+                  ) : (
+                    <MdArrowDropUp // Displaying MdArrowDropUp icon when isArrowDown is false
+                      className="text-lg cursor-pointer"
+                      onClick={() => {
+                        toggleArrow();
+                        toggleDisplay();
+                      }}
+                    />
+                  )}
+                  {display && (
+                    <div className="absolute top-[80%] right-1 flex flex-col bg-gray-300 text-gray-600 p-2 rounded-md">
+                      <Link href="/dashboard">
+                        <div className="pl-2 cursor-pointer hover:font-bold mb-2">
+                          Dashboard
+                        </div>
+                      </Link>
+                      <button
+                        className="bg-primary text-white font-bold p-2 rounded-md hover:bg-secondary"
+                        onClick={disconnect}
+                      >
+                        Disconnect wallet
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -303,14 +305,24 @@ export const Header = () => {
             </div>
           </Link>
           {/* Buttons */}
-          <Link href="/CreateCampaign">
-            <button className="border-2 border-primary px-5 py-2 font-bold text-primary rounded hover:bg-primary hover:text-white my-2">
-              Start a Project
-            </button>
-          </Link>
-          <button className="border-2 border-white font-bold px-5 py-2 text-white bg-primary rounded hover:bg-secondary my-2">
-            Connect Wallet
-          </button>
+          {!status ? (
+            <Link href="/login">
+              <button className=" bg-primary text-white px-5 py-2 font-bold rounded-md ">
+                Login / Register
+              </button>
+            </Link>
+          ) : (
+            <div>
+              <Link href="/CreateCampaign">
+                <button className="border-2 border-primary px-5 py-2 font-bold text-primary rounded hover:bg-primary hover:text-white my-2">
+                  Start a Project
+                </button>
+              </Link>
+              <button className="border-2 border-white font-bold px-5 py-2 text-white bg-primary rounded hover:bg-secondary my-2">
+                Connect Wallet
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

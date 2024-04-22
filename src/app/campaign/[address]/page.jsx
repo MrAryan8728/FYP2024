@@ -77,7 +77,7 @@ export default function Page({ params }) {
               <h1 className=" font-bold text-2xl text-second"> 52 </h1>
               <h1> days to go </h1>
             </div>
-            <button className=" bg-first text-fourth font-bold px-9 w-full py-3 rounded">
+            <button className=" bg-primary text-white font-bold px-9 w-full py-3 rounded">
               {" "}
               Contribute{" "}
             </button>

@@ -14,7 +14,7 @@ const page = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
     DataLoader();
-  }, []); 
+  }, []);
 
   const DataLoader = async () => {
     // const data = await fetch("https://jsonplaceholder.typicode.com/posts");
@@ -29,6 +29,11 @@ const page = () => {
     // console.log(allCamps);
     // console.log(contract);
   };
+  const timeDiff = (deadline) => {
+    const date = new Date().getTime();
+    let diff = parseInt(deadline) - date;
+    return diff;
+  };
   return (
     <div className=" grid grid-cols-4 gap-3">
       {data.length === 0 ? (
@@ -37,15 +42,18 @@ const page = () => {
         </div>
       ) : (
         data.map((val, index) => {
-          return (
-            <Link href={`/campaign/${val.args.campaignAddress}`} key={index}>
-              <Card
-                name={val.args.title}
-                desc={val.args.desc}
-                imgURI={val.args.imgURI}
-              />
-            </Link>
-          );
+          if (timeDiff(val.args.deadline) > 0) {
+            return (
+              <Link href={`/campaign/${val.args.campaignAddress}`} key={index}>
+                <Card
+                  name={val.args.title}
+                  desc={val.args.desc}
+                  imgURI={val.args.imgURI}
+                  deadline={val.args.deadline}
+                />
+              </Link>
+            );
+          }
         })
       )}
     </div>

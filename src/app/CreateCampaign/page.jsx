@@ -23,6 +23,8 @@ const InitCamp = () => {
     imgURI: "",
     category: "",
     country: "",
+    deadline: 1,
+    threshold: 1,
   });
 
   const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
@@ -74,7 +76,8 @@ const InitCamp = () => {
         formData.imgURI,
         formData.category,
         formData.country,
-        parseInt(45)
+        parseInt(formData.deadline),
+        parseInt(formData.threshold)
       );
       await campaignData.wait();
       console.log(campaignData.to);
@@ -95,6 +98,10 @@ const InitCamp = () => {
       toast.error("Target amount must be greater than 0");
     else if (formData.imgURI === "") toast.error("Upload image");
     else if (formData.category === "") toast.error("Enter project category");
+    else if (formData.deadline <= 0)
+      toast.error("Deadline must be greater than 0");
+    else if (formData.threshold <= 0)
+      toast.error("Threshold must be greater than 0");
     else toast.error("Enter your country");
   };
   const handleChange = (e) => {
@@ -239,12 +246,47 @@ const InitCamp = () => {
           />
         </div>
       </div>
+      <div className="px-2">
+        <div className="mb-4">
+          <label htmlFor="dealin" className="leading-7 text-sm text-gray-600">
+            Deadline
+          </label>
+          <input
+            type="number"
+            onChange={handleChange}
+            value={formData.deadline}
+            id="deadline"
+            name="deadline"
+            className="w-full bg-white rounded border border-third focus:border-third focus:ring-2 focus:ring-indigo-200 text-base outline-none text-second py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+          />
+        </div>
+      </div>
+      <div className="px-2">
+        <div className="mb-4">
+          <label
+            htmlFor="threshold"
+            className="leading-7 text-sm text-gray-600"
+          >
+            Threshold
+          </label>
+          <input
+            type="number"
+            onChange={handleChange}
+            value={formData.threshold}
+            id="threshold"
+            name="threshold"
+            className="w-full bg-white rounded border border-third focus:border-third focus:ring-2 focus:ring-indigo-200 text-base outline-none text-second py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+          />
+        </div>
+      </div>
       {formData.title === "" ||
       formData.desc === "" ||
       formData.target <= 0 ||
       formData.imgURI === "" ||
       formData.category === "" ||
-      formData.country === "" ? (
+      formData.country === "" ||
+      formData.deadline <= 0 ||
+      formData.threshold <= 0 ? (
         <button
           className="bg-primary text-xl uppercase text-white px-8 py-3 max-w-[20%] mx-auto block rounded-md font-bold "
           onClick={falseSubmit}

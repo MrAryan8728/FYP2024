@@ -26,8 +26,10 @@ contract CampaignFactory {
         string memory imgURI,
         string memory category,
         string memory country,
-        uint deadline
+        uint deadline,
+        uint threshold
     ) public {
+        uint _deadline=(block.timestamp + (deadline * 24 * 60 * 60))*1000;
         Campaign new_camp = new Campaign(
             title,
             desc,
@@ -35,8 +37,9 @@ contract CampaignFactory {
             imgURI,
             category,
             country,
-            deadline,
-            msg.sender
+            _deadline,
+            msg.sender,
+            threshold
         );
         deployedCampaigns.push(address(new_camp));
 
@@ -45,7 +48,7 @@ contract CampaignFactory {
             category,
             country,
             address(new_camp),
-            deadline,
+            _deadline,
             title,
             desc,
             targetAmt,
@@ -64,7 +67,7 @@ contract Campaign {
     uint public amtraised;
     string public country;
     uint public deadline;
-    uint minAmt;
+    uint public threshold;
     uint ind;
     uint[3] installments;
     uint public contributorsCount;
@@ -74,6 +77,9 @@ contract Campaign {
     uint[2][2] votes; // 2 times vote need to be casted, so a size 2 array, each with 2 options :- yes(0), no(1)
     uint votingInd; // maintains the no of time the vote is going to be casted
     bool public auditReport;
+    uint public reqdContribution;
+    bool isDisbursable;
+    uint public auditReportCount;
     mapping(address => address[]) contributors;
     mapping(address => uint) contribution;
     mapping(address => uint) balances;
@@ -84,6 +90,7 @@ contract Campaign {
         uint indexed amount,
         uint indexed timestamp
     );
+    event auditReportSubmission(uint indexed rNo, address indexed sender, uint indexed timestamp);
 
     constructor(
         string memory _title,
@@ -93,7 +100,8 @@ contract Campaign {
         string memory _category,
         string memory _country,
         uint _deadline,
-        address _owner
+        address _owner,
+        uint _threshold
     ) {
         owner = payable(_owner);
         title = _title;
@@ -103,8 +111,8 @@ contract Campaign {
         category = _category;
         amtraised = 0;
         country = _country;
-        deadline = block.timestamp + (_deadline * 24 * 60 * 60);
-        minAmt = (targetAmt << 1) / 100;
+        deadline = _deadline;
+        threshold = (targetAmt * _threshold) / 100;
         votes[0][0] = votes[0][1] = votes[1][0] = votes[1][1] = 0;
         votingInd = 0;
         ind = 0;
@@ -117,17 +125,14 @@ contract Campaign {
         isCampaignOpen = true;
         targetAchieved = false;
         auditReport = false;
+        isDisbursable=false;
+        reqdContribution=(targetAmt*70)/100;
+        auditReportCount=0;
     }
 
     // function modifiers :-
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this function");
-        _;
-    }
-    modifier canDisburse() {
-        require(isCampaignOpen, "Campaign closed");
-        require(targetAchieved, "Target not yet reached");
-        require(block.timestamp > deadline, "Deadline not yet reached");
         _;
     }
 
@@ -146,6 +151,8 @@ contract Campaign {
 
     function auditReportSubmitted() public {
         auditReport = true;
+        auditReportCount++;
+        emit auditReportSubmission(auditReportCount, owner, block.timestamp);
     }
 
     function contribute() public payable {
@@ -164,6 +171,7 @@ contract Campaign {
         contribution[msg.sender] += msg.value;
         amtraised += msg.value;
         if (amtraised == targetAmt) targetAchieved = true;
+        if(amtraised>=reqdContribution) isDisbursable=true;
         emit contributed(msg.sender, msg.value, block.timestamp);
     }
 
@@ -171,7 +179,7 @@ contract Campaign {
         require(isCampaignOpen, "Campaign already closed");
         require(msg.sender != owner, "Owner can't vote");
         require(auditReport, "Audit report not yet submitted");
-        require(contribution[msg.sender] > minAmt, "You are not an approver");
+        require(contribution[msg.sender] > threshold, "You are not an approver");
         require(!hasVoted[votingInd][msg.sender], "You have already voted");
         votes[votingInd][currentVote]++;
         hasVoted[votingInd][msg.sender] = true;
@@ -181,11 +189,14 @@ contract Campaign {
         require(isCampaignOpen, "Campaign already closed");
         require(block.timestamp > deadline, "Deadline not yet reached");
         if (ind == 0) {
-            owner.transfer(installments[ind]);
-            balances[owner] += installments[ind];
-            disbursed += installments[ind];
-            amtraised -= installments[ind];
-            ind++;
+            if(isDisbursable) {
+                owner.transfer(installments[ind]);
+                balances[owner] += installments[ind];
+                disbursed += installments[ind];
+                amtraised -= installments[ind];
+                ind++;
+            }
+            else reimburse("Disbursable amount not reached");
         } else {
             uint yes = votes[votingInd][0];
             uint tot = votes[votingInd][0] + votes[votingInd][1];

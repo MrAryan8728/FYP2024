@@ -1,10 +1,24 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import ProgressBar from "@ramonak/react-progress-bar";
-import { AiOutlineClockCircle } from "react-icons/ai";
 
 const Card = (props) => {
+  useEffect(() => {
+    const date = new Date().getTime();
+    let timeDiff = parseInt(props.deadline) - date;
+    timeDiff /= 1000;
+    const daysRemaining = timeDiff / (24 * 60 * 60);
+    const hoursRemaining = timeDiff / (60 * 60);
+    console.log(daysRemaining);
+    console.log(hoursRemaining);
+  }, []);
+
+  const formatDate = (deadline) => {
+    const date = new Date(parseInt(deadline));
+    return date.toLocaleString();
+  };
+
   const truncateText = (text, maxLen) => {
     if (text.length === "") return text;
     if (text.length <= maxLen) return text;
@@ -36,10 +50,7 @@ const Card = (props) => {
           baseBgColor="#ffffff"
           borderRadius="5px"
         />
-        <div className="flex justify-end gap-1 mt-4">
-          <AiOutlineClockCircle />
-          <div className="text-sm font-normal">24 days left</div>
-        </div>
+        <div>Deadline : {formatDate(props.deadline)}</div>
         <div className=" flex justify-center items-center">
           <button className=" font-bold text-xl bg-primary px-5 py-2 text-white rounded-lg my-3 hover:bg-secondary">
             Contribute

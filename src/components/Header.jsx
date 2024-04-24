@@ -8,8 +8,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleStatus } from "../utils/loginSlice";
+import { signOut, useSession } from "next-auth/react";
 
 const networks = {
+
   sepolia: {
     chainId: `0x${Number(11155111).toString(16)}`,
     chainName: "Sepolia Test Network",
@@ -46,6 +48,7 @@ const networks = {
 };
 
 export const Header = () => {
+  const { data: session, stat } = useSession()
   const status = useSelector((state) => state.auth);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -189,7 +192,7 @@ export const Header = () => {
 
       <div className="hidden lg:flex gap-5">
         {/* for login */}
-        {!status ? (
+        {!session?.user ? (
           <Link href="/login">
             <button className=" bg-primary text-white px-5 py-2 font-bold rounded-md ">
               Login / Register
@@ -199,19 +202,33 @@ export const Header = () => {
           <div>
             {address === "" ? (
               !walletConnecting ? (
-                <button
-                  className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
-                  onClick={connect}
-                >
-                  Connect wallet
-                </button>
+                <div>
+                  <button
+                    className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
+                    onClick={connect}
+                  >
+                    Connect wallet
+                  </button>
+                  <button 
+                    className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
+                   onClick={() => signOut()}>
+                    LogOut
+                  </button>
+                </div>
               ) : (
-                <button
-                  className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
-                  onClick={falseClick}
-                >
-                  Connect wallet
-                </button>
+                <div>
+                  <button
+                    className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
+                    onClick={falseClick}
+                  >
+                    Connect wallet
+                  </button>
+                  <button 
+                    className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
+                  onClick={() => signOut()}>
+                    LogOut
+                  </button>
+                </div>
               )
             ) : (
               <div className="flex justify-center items-center">

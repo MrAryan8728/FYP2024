@@ -7,9 +7,7 @@ import Footer from "../components/Footer";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import StateProvider from '../components/StateProvider'
-
-import { getServerSession } from "next-auth";
-import SessionProvider from "../utils/SessionProvider";
+import AuthProvider from "../utils/SessionProvider";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -26,12 +24,11 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  const session = await getServerSession();
   return (
     <html lang="en">
       <body className={(rubik.className, ysabeau_sc.variable)} >
-        <StateProvider>
-          <SessionProvider session={session}>
+        <AuthProvider>
+          <StateProvider>
             <ToastContainer
               position="top-left"
               autoClose={3000}
@@ -51,8 +48,8 @@ export default async function RootLayout({ children }) {
               </Providers>
               <Footer />
             </div>
-          </SessionProvider>
-        </StateProvider>
+          </StateProvider>
+        </AuthProvider>
       </body>
     </html>
   );

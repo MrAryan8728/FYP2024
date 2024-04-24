@@ -6,9 +6,18 @@ import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { toggleStatus } from "../../utils/loginSlice";
+// import { getServerSession } from "next-auth";
+import { useSession } from "next-auth/react";
+
 
 
 const Signup = () => {
+
+  const {data:session, status} =  useSession()
+  console.log(session, status)
+  const router = useRouter();
+  if (session) router.push("/")
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -17,7 +26,7 @@ const Signup = () => {
     country: "",
   });
 
-  const router = useRouter();
+  const [Loading, setLoading] = useState(false)
   const dispatch = useDispatch();
 
   const handleChange = (e) => {
@@ -26,13 +35,27 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
+
     if (!formData.name || !formData.email || !formData.password || !formData.contact || !formData.country) {
       toast.error("All fields are Mandatory !")
       return;
     }
 
+    const pattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+    if (!pattern.test(formData.email)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters long.");
+      return;
+    }
+
+
     try {
+      setLoading(true)
       const response = await fetch("/api/register", {
         method: "POST",
         headers: {
@@ -43,26 +66,26 @@ const Signup = () => {
       const res = await response.json();
       // console.log(res);
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         toast.success("User registered:");
         dispatch(toggleStatus(true))
-        sessionStorage.setItem('isLoggedIn',true);
+        sessionStorage.setItem('isLoggedIn', true);
         router.push('/')
       } else {
         toast.error("Failed to register user");
         dispatch(toggleStatus(false))
-        sessionStorage.setItem('isLoggedIn',false);
+        sessionStorage.setItem('isLoggedIn', false);
       }
     } catch (error) {
       toast.error("Failed to register user:", error);
       dispatch(toggleStatus(false))
-      sessionStorage.setItem('isLoggedIn',false);
+      sessionStorage.setItem('isLoggedIn', false);
     }
     finally {
       localStorage.setItem("account", "");
+      setLoading(false)
     }
 
-    // console.log("Form submitted with data:", formData);
   };
 
   return (
@@ -154,7 +177,7 @@ const Signup = () => {
               />
             </div>
             <div className=" flex justify-center">
-              <button type="submit" className="text-center p-3 rounded font-bold bg-primary text-white">Submit</button>
+              <button type="submit" className="text-center p-3 rounded font-bold bg-primary text-white">{Loading ? "Loading..":"Register"}</button>
             </div>
           </div>
         </form>

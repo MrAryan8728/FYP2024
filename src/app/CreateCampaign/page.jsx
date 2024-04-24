@@ -181,7 +181,6 @@ const InitCamp = () => {
               id="imgURI"
               name="imgURI"
               onChange={ImageChangeHandler}
-              // value={formData.imgURI}
               className="w-[90%] cursor-pointer bg-white rounded border border-third focus:border-third focus:ring-2 focus:ring-indigo-200 text-base outline-none text-second py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
             />
             {formData.imgURI === "" ? (

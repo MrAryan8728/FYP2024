@@ -1,35 +1,33 @@
 
-import {connectToDatabase} from "../../../utils/db";
 import User from "../../../models/User";
+import {connect} from '../../../lib/db'
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
-export const POST = async (request, response) => {
-  const { name, email, password, contact, country } = await request.json();
-  await connectToDatabase();
-
-  const existingUser = await User.findOne({ email });
-  console.log(existingUser)
-
-  if (existingUser) {
-    return new NextResponse("Already exist !", { status: 400 });
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 5);
-  const newUser = new User({
-    name,
-    email,
-    contact, 
-    password:hashedPassword,
-    country
-  });
-
+export const POST = async (request) => {
   try {
-    console.log(newUser)
-    await newUser.save();
-    return new NextResponse(JSON.stringify({message:"User is registered"}), { status: 200 });
+    await connect();
+
+    const { name, email, password, contact, country } = await request.json();
+
+    const isEmailExist = await User.findOne({email})
+    if(isEmailExist) return NextResponse.json({Errormessage:"Email Already exists !"})
+
+    const isContactExist = await User.findOne({contact})
+    if(isContactExist) return NextResponse.json({Errormessage:"Contact already linked"})
+
+    const hashedPassword = await bcrypt.hash(password, 5);
+
+    const newuser = await User.create({name, email, password:hashedPassword, contact, country})
+
+    return NextResponse.json(newuser,{
+      message: "User is registered",
+      status: 201
+    });
+
   } catch (err) {
-    return new NextResponse(err, {
+    return NextResponse.json({
+      message: "POST Error (sign up)",
       status: 500,
     });
   }

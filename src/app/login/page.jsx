@@ -1,5 +1,5 @@
-"use client";
-import React, { useState, useEffect } from "react";
+"use client"
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
@@ -9,17 +9,15 @@ import { useDispatch } from "react-redux";
 import { toggleStatus } from "../../utils/loginSlice";
 
 const LoginPage = () => {
+    const {data:session, status} =  useSession()
+  console.log(session, status)
+
   const router = useRouter();
+  if (session) router.push("/");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [Loading, setLoading] = useState(false)
   const dispatch = useDispatch();
-  const { data: session, status: sessionStatus } = useSession();
-
-  useEffect(() => {
-    if (sessionStatus === "authenticated") {
-      router.replace("/");
-    }
-  }, [sessionStatus, router]);
 
   const isValidEmail = (email) => {
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -39,33 +37,26 @@ const LoginPage = () => {
       return;
     }
 
-    const res = await signIn("credentials", {
-      redirect: true,
-      email,
-      password,
-    });
-
-    if (res?.error) {
-      toast.error("Invalid email or password");
-      dispatch(toggleStatus(false));
-      sessionStorage.setItem("isLoggedIn", false);
-    } else {
-      toast.success("Login Successful");
-      sessionStorage.setItem("isLoggedIn", true);
-      dispatch(toggleStatus(true));
-      router.push("/");
+    try {
+      setLoading(true)
+      const res = await signIn("credentials", {
+        email, password, redirect: false
+      })
+      if (res?.error) {
+        toast.error("Invalid Credentials")
+        setLoading(false)
+        return;
+      }
+      toast.success("Login Successfull !!")
+      dispatch(toggleStatus(true))
+      router.push('/')
+    } catch (error) {
+      toast.error("Error Occured" + error.message)
+      console.log(error)
     }
-
-    if (sessionStatus === "loading") {
-      return <h1>Loading...</h1>;
-    }
-
-    setEmail("");
-    setPassword("");
   };
 
   return (
-    sessionStatus !== "authenticated" && (
       <div className="grid place-items-center h-screen">
         <div className="p-3 bg-white max-w-md w-full rounded-lg border border-t-2 border-primary">
           <h1 className="font-bold text-3xl my-4 text-center text-gray-600 uppercase">
@@ -109,7 +100,7 @@ const LoginPage = () => {
                 type="submit"
                 className="w-full bg-primary text-white font-bold py-2 px-4 rounded"
               >
-                Submit
+                {Loading ? "Loading..." : "Login"}
               </button>
               <div className="flex justify-center mt-5">
                 <p className="text-gray-500">Don't have an account?</p>
@@ -124,7 +115,6 @@ const LoginPage = () => {
           </form>
         </div>
       </div>
-    )
   );
 };
 

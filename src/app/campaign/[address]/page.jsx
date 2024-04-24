@@ -1,9 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 // import Campaign from "../../../artifacts/contracts/Campaign.sol/Campaign.json";
 import Campaign from "../../../../artifacts/contracts/Campaign.sol/Campaign.json";
 import { Contract, JsonRpcProvider } from "ethers";
+import { useRouter } from "next/navigation";
 
 export default function Page({ params }) {
   const [title, setTitle] = useState("");
@@ -17,6 +18,7 @@ export default function Page({ params }) {
   const provider = new JsonRpcProvider(RPC);
   const campaignAddress = params.address;
   const contract = new Contract(campaignAddress, Campaign.abi, provider);
+  const router = useRouter();
 
   const getCampaignInfo = async () => {
     const campTitle = await contract.title();
@@ -32,9 +34,59 @@ export default function Page({ params }) {
     const campContributors = await contract.contributorsCount();
     setContributors(parseInt(campContributors));
   };
-  useEffect(() => {
-    getCampaignInfo();
-  }, []);
+
+  let ethereum = useRef(null);
+
+  const connect = async () => {
+    try {
+      await ethereum.current.request({ method: "eth_requestAccounts" });
+      const provider = new BrowserProvider(ethereum.current);
+
+      if (provider.network !== "sepolia") {
+        await ethereum.current.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              ...networks["sepolia"],
+            },
+          ],
+        });
+      }
+
+      const account = await provider.getSigner();
+      const Address = await account.getAddress();
+      // check balance
+      setAddress(Address);
+      localStorage.setItem("account", Address);
+      toast.success("Wallet Connected sucessfully");
+    } catch (e) {
+      if (e.code === 4001) {
+        toast.error("Permissions needed to continue");
+        setTimeout(() => router.push("/"), 3000);
+      } else {
+        toast.error(e.message);
+        setTimeout(() => router.push("/"), 3000);
+      }
+    }
+  };
+
+  // useEffect(() => {
+  //   if (ethereum.current === null) {
+  //     ethereum.current = window.ethereum;
+  //   }
+  //   const isLoggedIn = sessionStorage.getItem(isLoggedIn);
+  //   const acc = localStorage.getItem("account");
+  //   if (!isLoggedIn) {
+  //     toast.error("Login and connect wallet to continue");
+  //     setTimeout(() => router.push("/login"), 3000);
+  //   } else if (acc === null) {
+  //     if (typeof ethereum.current === null) {
+  //       toast.error("Install Metamask first");
+  //     } else {
+  //       connect();
+  //     }
+  //   } else getCampaignInfo();
+  // }, []);
 
   return (
     <div>

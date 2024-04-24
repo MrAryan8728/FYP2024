@@ -17,17 +17,19 @@ const page = () => {
   }, []);
 
   const DataLoader = async () => {
-    // const data = await fetch("https://jsonplaceholder.typicode.com/posts");
-    // const json = await data.json();
-    // setData(json);
-
     const getAllCampaigns = contract.filters.campaignCreated();
     const allCamps = await contract.queryFilter(getAllCampaigns);
     // console.log(allCamps);
     // allCamps.map((e) => console.log(e.args.title));
-    setData(allCamps);
+    // setData(allCamps);
     // console.log(allCamps);
     // console.log(contract);
+
+    let temp = [];
+    allCamps.map((camp) => {
+      if (timeDiff(camp.args.deadline) > 0) temp.push(camp);
+    });
+    setData(temp);
   };
   const timeDiff = (deadline) => {
     const date = new Date().getTime();
@@ -42,18 +44,16 @@ const page = () => {
         </div>
       ) : (
         data.map((val, index) => {
-          if (timeDiff(val.args.deadline) > 0) {
-            return (
-              <Link href={`/campaign/${val.args.campaignAddress}`} key={index}>
-                <Card
-                  name={val.args.title}
-                  desc={val.args.desc}
-                  imgURI={val.args.imgURI}
-                  deadline={val.args.deadline}
-                />
-              </Link>
-            );
-          }
+          return (
+            <Link href={`/campaign/${val.args.campaignAddress}`} key={index}>
+              <Card
+                name={val.args.title}
+                desc={val.args.desc}
+                imgURI={val.args.imgURI}
+                deadline={val.args.deadline}
+              />
+            </Link>
+          );
         })
       )}
     </div>

@@ -24,19 +24,22 @@ const CardContainer = () => {
   };
 
   const DataLoader = async () => {
-    // const data = await fetch("https://jsonplaceholder.typicode.com/posts");
-    // const json = await data.json();
-    // setData(json);
 
     const getAllCampaigns = contract.filters.campaignCreated();
     const allCamps = await contract.queryFilter(getAllCampaigns);
     // console.log(allCamps);
     // allCamps.map((e) => console.log(e.args.title));
-    setData(allCamps);
+    // setData(allCamps);
     // console.log(allCamps);
     // console.log(contract);
-  };
 
+    let temp = [];
+
+    allCamps.map((camp) => {
+      if (timeDiff(camp.args.deadline) > 0 && temp.length < 6) temp.push(camp);
+    });
+    setData(temp);
+  };
   return (
     <div className="my-12">
       <h1 className=" text-center font-semibold text-3xl text-gray-500 my-12">
@@ -48,23 +51,17 @@ const CardContainer = () => {
             <Shimmer />
           </div>
         ) : (
-          // timeDiff(val.args.deadline) > 0 &&
           data.map((val, index) => {
-            if (index < 6) {
-              return (
-                <Link
-                  href={`/campaign/${val.args.campaignAddress}`}
-                  key={index}
-                >
-                  <Card
-                    name={val.args.title}
-                    desc={val.args.desc}
-                    imgURI={val.args.imgURI}
-                    deadline={val.args.deadline}
-                  />
-                </Link>
-              );
-            }
+            return (
+              <Link href={`/campaign/${val.args.campaignAddress}`} key={index}>
+                <Card
+                  name={val.args.title}
+                  desc={val.args.desc}
+                  imgURI={val.args.imgURI}
+                  deadline={val.args.deadline}
+                />
+              </Link>
+            );
           })
         )}
       </div>

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Unlicensed
 
 pragma solidity ^0.8.0;
 
@@ -7,17 +7,18 @@ import "hardhat/console.sol";
 contract CampaignFactory {
     address[] public deployedCampaigns;
 
-    event campaignCreated(
-        address indexed owner,
-        string indexed category,
-        string indexed country,
-        address campaignAddress,
-        uint deadline,
-        string title,
-        string desc,
-        uint targetAmt,
-        string imgURI
-    );
+    struct CampaignDetails {
+        string category;
+        string country;
+        address campaignAddress;
+        uint deadline;
+        string title;
+        string desc;
+        uint targetAmt;
+        string imgURI;
+    }
+
+    event campaignCreated(CampaignDetails details);
 
     function createCampaign(
         string memory title,
@@ -27,9 +28,11 @@ contract CampaignFactory {
         string memory category,
         string memory country,
         uint deadline,
-        uint threshold
+        uint threshold,
+        uint n1,
+        uint n2
     ) public {
-        uint _deadline=(block.timestamp + (deadline * 24 * 60 * 60))*1000;
+        uint _deadline = (block.timestamp + (deadline * 24 * 60 * 60)) * 1000;
         Campaign new_camp = new Campaign(
             title,
             desc,
@@ -39,21 +42,21 @@ contract CampaignFactory {
             country,
             _deadline,
             msg.sender,
-            threshold
+            threshold,
+            n1,
+            n2
         );
         deployedCampaigns.push(address(new_camp));
-
-        emit campaignCreated(
-            msg.sender,
-            category,
-            country,
-            address(new_camp),
-            _deadline,
-            title,
-            desc,
-            targetAmt,
-            imgURI
-        );
+        emit campaignCreated(CampaignDetails({
+            category: category,
+            country: country,
+            campaignAddress: address(new_camp),
+            deadline: _deadline,
+            title: title,
+            desc: desc,
+            targetAmt: targetAmt,
+            imgURI: imgURI
+        }));
     }
 }
 
@@ -74,23 +77,28 @@ contract Campaign {
     uint public disbursed; // stores the total disbursed amount till now
     bool public isCampaignOpen;
     bool public targetAchieved;
-    uint[2][2] votes; // 2 times vote need to be casted, so a size 2 array, each with 2 options :- yes(0), no(1)
+    uint[2][2] public votes; // 2 times vote need to be casted, so a size 2 array, each with 2 options :- yes(0), no(1)
     uint votingInd; // maintains the no of time the vote is going to be casted
     bool public auditReport;
-    uint public reqdContribution;
-    bool isDisbursable;
     uint public auditReportCount;
-    mapping(address => address[]) contributors;
+    mapping(address => address[]) public contributors;
     mapping(address => uint) contribution;
     mapping(address => uint) balances;
     mapping(address => bool)[2] hasVoted; // map to maintain whether a person(address) has casted vote or not(bool) in
     // nth(n=2, 0<=i<n) time(so array of size 2)
+    uint n1;
+    uint n2;
+
     event contributed(
         address indexed currentContributor,
         uint indexed amount,
         uint indexed timestamp
     );
-    event auditReportSubmission(uint indexed rNo, address indexed sender, uint indexed timestamp);
+    event auditReportSubmission(
+        uint indexed rNo,
+        address indexed sender,
+        uint indexed timestamp
+    );
 
     constructor(
         string memory _title,
@@ -101,7 +109,9 @@ contract Campaign {
         string memory _country,
         uint _deadline,
         address _owner,
-        uint _threshold
+        uint _threshold,
+        uint _n1,
+        uint _n2
     ) {
         owner = payable(_owner);
         title = _title;
@@ -116,18 +126,14 @@ contract Campaign {
         votes[0][0] = votes[0][1] = votes[1][0] = votes[1][1] = 0;
         votingInd = 0;
         ind = 0;
-        uint installment1 = (targetAmt * 30) / 100;
-        uint installment3 = targetAmt - (installment1 << 1);
-        installments[0] = installments[1] = installment1;
-        installments[2] = installment3;
         contributorsCount = 0;
         disbursed = 0;
         isCampaignOpen = true;
         targetAchieved = false;
         auditReport = false;
-        isDisbursable=false;
-        reqdContribution=(targetAmt*70)/100;
-        auditReportCount=0;
+        auditReportCount = 0;
+        n1=_n1;
+        n2=_n2;
     }
 
     // function modifiers :-
@@ -171,7 +177,6 @@ contract Campaign {
         contribution[msg.sender] += msg.value;
         amtraised += msg.value;
         if (amtraised == targetAmt) targetAchieved = true;
-        if(amtraised>=reqdContribution) isDisbursable=true;
         emit contributed(msg.sender, msg.value, block.timestamp);
     }
 
@@ -179,7 +184,10 @@ contract Campaign {
         require(isCampaignOpen, "Campaign already closed");
         require(msg.sender != owner, "Owner can't vote");
         require(auditReport, "Audit report not yet submitted");
-        require(contribution[msg.sender] > threshold, "You are not an approver");
+        require(
+            contribution[msg.sender] > threshold,
+            "You are not an approver"
+        );
         require(!hasVoted[votingInd][msg.sender], "You have already voted");
         votes[votingInd][currentVote]++;
         hasVoted[votingInd][msg.sender] = true;
@@ -189,14 +197,19 @@ contract Campaign {
         require(isCampaignOpen, "Campaign already closed");
         require(block.timestamp > deadline, "Deadline not yet reached");
         if (ind == 0) {
-            if(isDisbursable) {
+            uint reqdContribution = (targetAmt * 70) / 100;
+            if (amtraised >= reqdContribution) {
+                uint installment1 = (amtraised * n1) / 100;
+                uint installment2=(amtraised * n2)/100;
+                uint installment3 = amtraised-(installment1+installment2);
+                installments[0] = installments[1] = installment1;
+                installments[2] = installment3;
                 owner.transfer(installments[ind]);
                 balances[owner] += installments[ind];
                 disbursed += installments[ind];
                 amtraised -= installments[ind];
                 ind++;
-            }
-            else reimburse("Disbursable amount not reached");
+            } else reimburse("Disbursable amount not reached");
         } else {
             uint yes = votes[votingInd][0];
             uint tot = votes[votingInd][0] + votes[votingInd][1];

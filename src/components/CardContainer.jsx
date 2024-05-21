@@ -24,11 +24,11 @@ const CardContainer = () => {
   };
 
   const DataLoader = async () => {
-
     const getAllCampaigns = contract.filters.campaignCreated();
     const allCamps = await contract.queryFilter(getAllCampaigns);
-    // console.log(allCamps);
+    console.log(allCamps);
     // allCamps.map((e) => console.log(e.args.title));
+    // allCamps.map((e) => console.log(e));
     // setData(allCamps);
     // console.log(allCamps);
     // console.log(contract);
@@ -36,7 +36,8 @@ const CardContainer = () => {
     let temp = [];
 
     allCamps.map((camp) => {
-      if (timeDiff(camp.args.deadline) > 0 && temp.length < 6) temp.push(camp);
+      // if (timeDiff(camp.args.deadline) > 0 && temp.length < 6)
+      temp.push(camp);
     });
     setData(temp);
   };

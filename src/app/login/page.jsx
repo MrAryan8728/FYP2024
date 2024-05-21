@@ -103,7 +103,7 @@ const LoginPage = () => {
                 {Loading ? "Loading..." : "Login"}
               </button>
               <div className="flex justify-center mt-5">
-                <p className="text-gray-500">Don't have an account?</p>
+                <p className="text-gray-500">{"Don't"} have an account?</p>
                 <Link
                   href="/register"
                   className="ml-1 font-bold cursor-pointer text-gray-600"

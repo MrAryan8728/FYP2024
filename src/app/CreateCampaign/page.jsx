@@ -77,7 +77,9 @@ const InitCamp = () => {
         formData.category,
         formData.country,
         parseInt(formData.deadline),
-        parseInt(formData.threshold)
+        parseInt(formData.threshold),
+        parseInt(30),
+        parseInt(30)
       );
       await campaignData.wait();
       console.log(campaignData.to);

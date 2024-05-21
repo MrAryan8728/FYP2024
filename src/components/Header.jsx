@@ -8,10 +8,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleStatus } from "../utils/loginSlice";
+import { setWalletAddress } from "../utils/walletSlice";
 import { signOut, useSession } from "next-auth/react";
 
 const networks = {
-
   sepolia: {
     chainId: `0x${Number(11155111).toString(16)}`,
     chainName: "Sepolia Test Network",
@@ -48,7 +48,7 @@ const networks = {
 };
 
 export const Header = () => {
-  const { data: session, stat } = useSession()
+  const { data: session, stat } = useSession();
   const status = useSelector((state) => state.auth);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -89,10 +89,14 @@ export const Header = () => {
     if (acc === null) {
       setAddress("");
       localStorage.setItem("account", "");
-    } else setAddress(acc);
+    } else {
+      setAddress(acc);
+      dispatch(setWalletAddress(acc));
+    }
     let isLoggedIn = sessionStorage.getItem("isLoggedIn");
     if (isLoggedIn == null) isLoggedIn = false;
     dispatch(toggleStatus(isLoggedIn));
+    // dispatch(setWalletAddress(address));
   }, []);
 
   const toggleMenu = () => {
@@ -131,6 +135,7 @@ export const Header = () => {
         const Address = await account.getAddress();
         // check balance
         setAddress(Address);
+        dispatch(setWalletAddress(Address));
         localStorage.setItem("account", Address);
         toast.success("Wallet Connected sucessfully");
       } catch (e) {
@@ -146,6 +151,7 @@ export const Header = () => {
 
   const disconnect = () => {
     setAddress("");
+    dispatch(setWalletAddress(""));
     localStorage.setItem("account", "");
     toast.success("Wallet Disconnected sucessfully");
     setDisplay(false);
@@ -209,9 +215,10 @@ export const Header = () => {
                   >
                     Connect wallet
                   </button>
-                  <button 
+                  <button
                     className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
-                   onClick={() => signOut()}>
+                    onClick={() => signOut()}
+                  >
                     LogOut
                   </button>
                 </div>
@@ -223,9 +230,10 @@ export const Header = () => {
                   >
                     Connect wallet
                   </button>
-                  <button 
+                  <button
                     className="bg-primary font-bold text-white p-2 rounded-md hover:bg-secondary max-[770px]"
-                  onClick={() => signOut()}>
+                    onClick={() => signOut()}
+                  >
                     LogOut
                   </button>
                 </div>
@@ -237,7 +245,10 @@ export const Header = () => {
                     Start a Project
                   </button>
                 </Link>
-                <div className="flex justify-center items-center">
+                <div
+                  className="flex justify-center items-center"
+                  ref={dropdownRef}
+                >
                   <div className=" border-2 border-fourth px-4 py-2">
                     {address.slice(0, 6)}.......
                     {address.slice(address.length - 4)}

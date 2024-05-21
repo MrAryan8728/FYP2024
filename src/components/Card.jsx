@@ -26,8 +26,8 @@ const Card = (props) => {
   };
   return (
     <div className=" w-[90%] rounded-md h-[550px] bg-gray-200 text-gray-600 hover:shadow-primary hover:shadow-xl hover:-translate-y-4 hover:transition-all hover:duration-500">
-      <div style={{ width: "100%", height: "100", background: "#OOFFFFFF" }}>
-        <Image
+      {/* <div style={{ width: "100%", height: "100", background: "#OOFFFFFF" }}> */}
+      {/* <Image
           src={`https://ipfs.io/ipfs/${props.imgURI}`}
           alt=""
           width="1"
@@ -56,7 +56,7 @@ const Card = (props) => {
             Contribute
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

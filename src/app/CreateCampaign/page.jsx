@@ -13,6 +13,8 @@ const {
 } = require("ethers");
 
 const InitCamp = () => {
+  const [firstInstallment, setFirstInstallment] = useState();
+  const [secondInstallment, setSecondInstallment] = useState();
   const [file, setFile] = useState("");
   const [cid, setCid] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -25,6 +27,9 @@ const InitCamp = () => {
     country: "",
     deadline: 1,
     threshold: 1,
+    firstInstallment: 10,
+    secondInstallment: 10,
+    thirdInstallment: 80
   });
 
   const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
@@ -56,6 +61,30 @@ const InitCamp = () => {
       toast.error("Trouble uploading file");
     }
   };
+
+  const handleFirstInstallmentChange = (e) => {
+    let value = parseInt(e.target.value);
+    setFirstInstallment(value);
+    if (value >= 10 && value <= 30) {
+      setFirstInstallment(value);
+      toast.info("Updated");
+    } else {
+      toast.error("Value can be between 10 and 30 inclusive")
+    }
+  };
+
+  const handleSecondInstallmentChange = (e) => {
+    let value = parseInt(e.target.value);
+    setSecondInstallment(value);
+    if (value >= 10 && value <= 30) {
+      setSecondInstallment(value);
+      toast.info("Updated");
+    } else {
+      toast.error("Value can be between 10 and 30 inclusive")
+    }
+  };
+
+  const thirdInstallment = 100 - firstInstallment - secondInstallment;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -280,14 +309,51 @@ const InitCamp = () => {
           />
         </div>
       </div>
+      <div className=" px-2 mb-4 text-center leading-7 font-medium text-gray-600 uppercase">
+        <p> Select  Installments  for  Disbursement Process </p>
+      </div>
+      <div className=" px-2 mb-4">
+        <label className="leading-7 text-sm text-gray-600">First Installment: </label>
+        <input
+          type="number"
+          placeholder="eg.(10%)"
+          value={firstInstallment}
+          onChange={handleFirstInstallmentChange}
+          min="10"
+          max="30"
+          className="w-full bg-white rounded border border-third focus:border-third focus:ring-2 focus:ring-indigo-200 text-base outline-none text-second py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+        />
+      </div>
+      <div className=" px-2 mb-4">
+        <label className="leading-7 text-sm text-gray-600">Second Installment: </label>
+        <input
+          type="number"
+          placeholder="eg.(10%)"
+          value={secondInstallment}
+          onChange={handleSecondInstallmentChange}
+          min="10"
+          max="30"
+          className="w-full bg-white rounded border border-third focus:border-third focus:ring-2 focus:ring-indigo-200 text-base outline-none text-second py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+        />
+      </div>
+      <div className=" px-2 mb-4">
+        <label className="leading-7 text-sm text-gray-600">Third Installment: </label>
+        <input
+          type="number"
+          placeholder="eg.(80%)"
+          value={thirdInstallment}
+          className="w-full bg-white rounded border border-third focus:border-third focus:ring-2 focus:ring-indigo-200 text-base outline-none text-second py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+          readOnly
+        />
+      </div>
       {formData.title === "" ||
-      formData.desc === "" ||
-      formData.target <= 0 ||
-      formData.imgURI === "" ||
-      formData.category === "" ||
-      formData.country === "" ||
-      formData.deadline <= 0 ||
-      formData.threshold <= 0 ? (
+        formData.desc === "" ||
+        formData.target <= 0 ||
+        formData.imgURI === "" ||
+        formData.category === "" ||
+        formData.country === "" ||
+        formData.deadline <= 0 ||
+        formData.threshold <= 0 ? (
         <button
           className="bg-primary text-xl uppercase text-white px-8 py-3 max-w-[20%] mx-auto block rounded-md font-bold "
           onClick={falseSubmit}

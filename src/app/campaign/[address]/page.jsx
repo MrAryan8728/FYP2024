@@ -5,6 +5,7 @@ import Image from "next/image";
 import Campaign from "../../../../artifacts/contracts/Campaign.sol/Campaign.json";
 import { Contract, JsonRpcProvider } from "ethers";
 import { useRouter } from "next/navigation";
+import Modal from "../../../components/Modal"
 
 export default function Page({ params }) {
   const [title, setTitle] = useState("");
@@ -15,6 +16,7 @@ export default function Page({ params }) {
   const [contributors, setContributors] = useState();
   const [owner, setOwner] = useState("");
   const [address, setAddress] = useState("");
+  const [isClicked, setIsClicked] = useState(false);
 
   const RPC = process.env.NEXT_PUBLIC_RPC_URL;
   const provider = new JsonRpcProvider(RPC);
@@ -74,7 +76,9 @@ export default function Page({ params }) {
     }
   };
 
-  const contribute = async () => {};
+  const contribute = async () => {
+    setIsClicked(true);
+  };
 
   useEffect(() => {
     //   if (ethereum.current === null) {
@@ -123,13 +127,11 @@ export default function Page({ params }) {
         </div>
         <div className=" grid grid-cols-3 gap-5">
           {/* For image  */}
-          <div className="col-span-2 bg-white">
+          <div className="col-span-2 bg-white relative">
             <Image
               src={`https://ipfs.io/ipfs/${imgURI}`}
-              alt=""
-              width="100"
-              height="100"
-              objectFit="contain"
+              alt="Campaign image"
+              fill={true}
             />
           </div>
           {/* For Other Options*/}
@@ -175,16 +177,17 @@ export default function Page({ params }) {
                 Vote{" "}
               </button>
             )}
-            {address === owner && (
+            {/* {address === owner && (
               <button
                 className=" bg-primary text-white font-bold px-9 w-full py-3 rounded"
                 onClick={contribute}
               >
                 {" "}
-                Disburse{" "}
+                Claim fund{" "}
               </button>
-            )}
+            )} */}
           </div>
+          {isClicked && <Modal setIsClicked={setIsClicked}/>}
         </div>
       </div>
     </div>

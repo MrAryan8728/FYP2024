@@ -6,7 +6,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 const Card = (props) => {
   useEffect(() => {
     const date = new Date().getTime();
-    let timeDiff = parseInt(props.deadline) - date;
+    let timeDiff = getDeadline(props.deadline) - date;
     timeDiff /= 1000;
     const daysRemaining = timeDiff / (24 * 60 * 60);
     const hoursRemaining = timeDiff / (60 * 60);
@@ -15,8 +15,12 @@ const Card = (props) => {
   }, []);
 
   const formatDate = (deadline) => {
-    const date = new Date(parseInt(deadline));
+    const date = new Date(getDeadline(deadline));
     return date.toLocaleString();
+  };
+
+  const getDeadline = (deadline) => {
+    return Number(BigInt(deadline) * BigInt(1000));
   };
 
   const truncateText = (text, maxLen) => {
@@ -25,18 +29,15 @@ const Card = (props) => {
     return text.slice(0, maxLen) + "...";
   };
   return (
-    <div className=" w-[90%] rounded-md h-[550px] bg-gray-200 text-gray-600 hover:shadow-primary hover:shadow-xl hover:-translate-y-4 hover:transition-all hover:duration-500">
-      {/* <div style={{ width: "100%", height: "100", background: "#OOFFFFFF" }}> */}
-      {/* <Image
+    <div className="w-[90%] rounded-md p-1 h-[500px] bg-gray-200 text-gray-600 hover:shadow-primary hover:shadow-xl hover:-translate-y-4 hover:transition-all hover:duration-500 flex-row box-border">
+      <div className="w-[100%] h-[40%] bg-[#OOFFFFFF] overflow-hidden relative rounded-2xl">
+        <Image
           src={`https://ipfs.io/ipfs/${props.imgURI}`}
-          alt=""
-          width="1"
-          height="1"
-          layout="responsive"
-          objectFit="contain"
+          alt="Campaign Image"
+          fill={true}
         />
       </div>
-      <div className=" px-5">
+      <div className="px-5">
         <h1 className=" text-xl font-bold text-center mb-3">
           {truncateText(props.name, 20)}
         </h1>
@@ -56,7 +57,7 @@ const Card = (props) => {
             Contribute
           </button>
         </div>
-      </div> */}
+      </div>
     </div>
   );
 };

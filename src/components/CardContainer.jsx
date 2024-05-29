@@ -28,7 +28,7 @@ const CardContainer = () => {
     const allCamps = await contract.queryFilter(getAllCampaigns);
     console.log(allCamps);
     // allCamps.map((e) => console.log(e.args.title));
-    // allCamps.map((e) => console.log(e));
+    // allCamps.map((e) => console.log(e.args.details.title));
     // setData(allCamps);
     // console.log(allCamps);
     // console.log(contract);
@@ -38,6 +38,7 @@ const CardContainer = () => {
     allCamps.map((camp) => {
       // if (timeDiff(camp.args.deadline) > 0 && temp.length < 6)
       temp.push(camp);
+      // console.log(temp[temp.length - 1].args.details.title);
     });
     setData(temp);
   };
@@ -49,16 +50,19 @@ const CardContainer = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[75rem] mx-auto">
         {data.length === 0 ? (
           <div className=" col-span-4">
-            <Shimmer />
+            <Shimmer size={data.length} />
           </div>
         ) : (
           data.map((val, index) => {
             return (
-              <Link href={`/campaign/${val.args.campaignAddress}`} key={index}>
+              <Link
+                href={`/campaign/${val.args.details.campaignAddress}`}
+                key={index}
+              >
                 <Card
-                  name={val.args.title}
-                  desc={val.args.desc}
-                  imgURI={val.args.imgURI}
+                  name={val.args.details.title}
+                  desc={val.args.details.desc}
+                  imgURI={val.args.details.imgURI}
                   deadline={val.args.deadline}
                 />
               </Link>

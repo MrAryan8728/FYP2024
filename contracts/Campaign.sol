@@ -8,17 +8,19 @@ contract CampaignFactory {
     address[] public deployedCampaigns;
 
     struct CampaignDetails {
-        string category;
-        string country;
-        address campaignAddress;
-        uint deadline;
-        string title;
-        string desc;
-        uint targetAmt;
-        string imgURI;
-    }
+    address campaignAddress;
+    string title;
+    string desc;
+    string imgURI;
+    uint targetAmt;
+}
 
-    event campaignCreated(CampaignDetails details);
+    event campaignCreated(
+    string indexed category,
+    string indexed country,
+    uint indexed deadline,
+    CampaignDetails details
+);
 
     function createCampaign(
         string memory title,
@@ -32,7 +34,7 @@ contract CampaignFactory {
         uint n1,
         uint n2
     ) public {
-        uint _deadline = (block.timestamp + (deadline * 24 * 60 * 60)) * 1000;
+        uint _deadline = (block.timestamp + (deadline * 24 * 60 * 60));
         Campaign new_camp = new Campaign(
             title,
             desc,
@@ -46,17 +48,18 @@ contract CampaignFactory {
             n1,
             n2
         );
+
+        address campaignAddress=address(new_camp);
         deployedCampaigns.push(address(new_camp));
-        emit campaignCreated(CampaignDetails({
-            category: category,
-            country: country,
-            campaignAddress: address(new_camp),
-            deadline: _deadline,
-            title: title,
-            desc: desc,
-            targetAmt: targetAmt,
-            imgURI: imgURI
-        }));
+
+        CampaignDetails memory details = CampaignDetails({
+        campaignAddress: campaignAddress,
+        title: title,
+        desc: desc,
+        imgURI: imgURI,
+        targetAmt: targetAmt
+    });
+        emit campaignCreated(category, country, _deadline, details);
     }
 }
 

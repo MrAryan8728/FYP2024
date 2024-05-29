@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// import CampaignFactory from "../../artifacts/contracts/Campaign.sol/CampaignFactory.json";
 import CampaignFactory from "../../../artifacts/contracts/Campaign.sol/CampaignFactory.json";
 import { useRouter } from "next/navigation";
 const {
@@ -13,8 +12,8 @@ const {
 } = require("ethers");
 
 const InitCamp = () => {
-  const [firstInstallment, setFirstInstallment] = useState();
-  const [secondInstallment, setSecondInstallment] = useState();
+  const [firstInstallment, setFirstInstallment] = useState(10);
+  const [secondInstallment, setSecondInstallment] = useState(10);
   const [file, setFile] = useState("");
   const [cid, setCid] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -29,8 +28,9 @@ const InitCamp = () => {
     threshold: 1,
     firstInstallment: 10,
     secondInstallment: 10,
-    thirdInstallment: 80
   });
+  const [error1, setError1] = useState(false);
+  const [error2, setError2] = useState(false);
 
   const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
   const RPC = process.env.NEXT_PUBLIC_RPC_URL;
@@ -62,29 +62,8 @@ const InitCamp = () => {
     }
   };
 
-  const handleFirstInstallmentChange = (e) => {
-    let value = parseInt(e.target.value);
-    setFirstInstallment(value);
-    if (value >= 10 && value <= 30) {
-      setFirstInstallment(value);
-      toast.info("Updated");
-    } else {
-      toast.error("Value can be between 10 and 30 inclusive")
-    }
-  };
-
-  const handleSecondInstallmentChange = (e) => {
-    let value = parseInt(e.target.value);
-    setSecondInstallment(value);
-    if (value >= 10 && value <= 30) {
-      setSecondInstallment(value);
-      toast.info("Updated");
-    } else {
-      toast.error("Value can be between 10 and 30 inclusive")
-    }
-  };
-
-  const thirdInstallment = 100 - firstInstallment - secondInstallment;
+  const thirdInstallment =
+    100 - formData.firstInstallment - formData.secondInstallment;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -107,8 +86,8 @@ const InitCamp = () => {
         formData.country,
         parseInt(formData.deadline),
         parseInt(formData.threshold),
-        parseInt(30),
-        parseInt(30)
+        parseInt(firstInstallment),
+        parseInt(secondInstallment)
       );
       await campaignData.wait();
       console.log(campaignData.to);
@@ -133,6 +112,10 @@ const InitCamp = () => {
       toast.error("Deadline must be greater than 0");
     else if (formData.threshold <= 0)
       toast.error("Threshold must be greater than 0");
+    else if (formData.firstInstallment === "")
+      toast.error("Enter first installment");
+    else if (formData.secondInstallment === "")
+      toast.error("Enter second installment");
     else toast.error("Enter your country");
   };
   const handleChange = (e) => {
@@ -310,50 +293,69 @@ const InitCamp = () => {
         </div>
       </div>
       <div className=" px-2 mb-4 text-center leading-7 font-medium text-gray-600 uppercase">
-        <p> Select  Installments  for  Disbursement Process </p>
+        <p> Select Installments for Disbursement Process </p>
       </div>
       <div className=" px-2 mb-4">
-        <label className="leading-7 text-sm text-gray-600">First Installment: </label>
+        <label className="leading-7 text-sm text-gray-600">
+          First Installment:{" "}
+        </label>
         <input
           type="number"
           placeholder="eg.(10%)"
-          value={firstInstallment}
-          onChange={handleFirstInstallmentChange}
+          name="firstInstallment"
+          value={formData.firstInstallment}
+          onChange={handleChange}
           min="10"
           max="30"
           className="w-full bg-white rounded border border-third focus:border-third focus:ring-2 focus:ring-indigo-200 text-base outline-none text-second py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
         />
+        {error1 && (
+          <p className="text-red-600 text-[9.5px]">
+            It must be in the range [10,30]
+          </p>
+        )}
       </div>
       <div className=" px-2 mb-4">
-        <label className="leading-7 text-sm text-gray-600">Second Installment: </label>
+        <label className="leading-7 text-sm text-gray-600">
+          Second Installment:{" "}
+        </label>
         <input
           type="number"
           placeholder="eg.(10%)"
-          value={secondInstallment}
-          onChange={handleSecondInstallmentChange}
+          name="secondInstallment"
+          value={formData.secondInstallment}
+          onChange={handleChange}
           min="10"
           max="30"
           className="w-full bg-white rounded border border-third focus:border-third focus:ring-2 focus:ring-indigo-200 text-base outline-none text-second py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
         />
+        {error2 && (
+          <p className="text-red-600 text-[9.5px]">
+            It must be in the range [10,30]
+          </p>
+        )}
       </div>
       <div className=" px-2 mb-4">
-        <label className="leading-7 text-sm text-gray-600">Third Installment: </label>
+        <label className="leading-7 text-sm text-gray-600">
+          Third Installment:{" "}
+        </label>
         <input
           type="number"
-          placeholder="eg.(80%)"
           value={thirdInstallment}
           className="w-full bg-white rounded border border-third focus:border-third focus:ring-2 focus:ring-indigo-200 text-base outline-none text-second py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
           readOnly
         />
       </div>
       {formData.title === "" ||
-        formData.desc === "" ||
-        formData.target <= 0 ||
-        formData.imgURI === "" ||
-        formData.category === "" ||
-        formData.country === "" ||
-        formData.deadline <= 0 ||
-        formData.threshold <= 0 ? (
+      formData.desc === "" ||
+      formData.target <= 0 ||
+      formData.imgURI === "" ||
+      formData.category === "" ||
+      formData.country === "" ||
+      formData.deadline <= 0 ||
+      formData.threshold <= 0 ||
+      formData.firstInstallment === "" ||
+      formData.secondInstallment === "" ? (
         <button
           className="bg-primary text-xl uppercase text-white px-8 py-3 max-w-[20%] mx-auto block rounded-md font-bold "
           onClick={falseSubmit}

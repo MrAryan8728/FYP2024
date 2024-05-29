@@ -123,13 +123,12 @@ export default function Page({ params }) {
         </div>
         <div className=" grid grid-cols-3 gap-5">
           {/* For image  */}
-          <div className=" col-span-2 bg-white">
+          <div className="col-span-2 bg-white">
             <Image
               src={`https://ipfs.io/ipfs/${imgURI}`}
               alt=""
-              width="1"
-              height="1"
-              layout="responsive"
+              width="100"
+              height="100"
               objectFit="contain"
             />
           </div>

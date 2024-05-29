@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const oneCard = () => {
   return (
@@ -13,20 +13,19 @@ const oneCard = () => {
       </div>
     </div>
   );
-}
+};
 
-const Shimmer = () => {
+const Shimmer = ({ size }) => {
   return (
     <>
-      <div className=' flex flex-wrap gap-7'>
+      <div className=" flex flex-wrap gap-7">
+        {/* {oneCard()}
         {oneCard()}
         {oneCard()}
-        {oneCard()}
-        {oneCard()}
-        {oneCard()}
-        {oneCard()}
-        {oneCard()}
-        {oneCard()}
+        {oneCard()} */}
+        {Array.from({ length: size }).map((_, index) => (
+          <div key={index}>{oneCard()}</div>
+        ))}
       </div>
     </>
   );

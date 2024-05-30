@@ -15,10 +15,10 @@ const Hero = () => {
           Boundary Dissolved :{''}
         </p>
         <p className='text-primary font-bold text-4xl lg:text-5xl mt-2'>
-          Crowdfunding
+          Crowdfunding {' '}
           <span style={{ color: '#0ab8f2', fontWeight: 'semibold' }}>
             <Typewriter
-              words={[' Redefined', ' Renewed', ' Innovated', ' Renovated']}
+              words={['Redefined', 'Renewed', 'Innovated', 'Renovated']}
               loop={5}
               cursor
               cursorStyle='|'

@@ -1,26 +1,23 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 
-const Modal = ({ purpose, setIsClicked }) => {
-  const [seconds, setSeconds] = useState(30);
-  const [Show, setShow] = useState(true);
+const Modal = ({ setIsClicked, targetAmt, amtraised }) => {
+  const [amount, setAmount] = useState(0);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setSeconds((prevSeconds) => {
-        if (prevSeconds === 0) {
-          clearInterval(timer);
-          setShow(false);
-          return prevSeconds;
-        }
-        return prevSeconds - 1;
-      });
-    }, 1000);
+  const handleChange = (e) => {
+    const val = e.target.value;
+    console.log(val+" "+amtraised+" "+targetAmt);
+    if (val + amtraised > targetAmt) {
+      setError("Target amount exceeded");
+      // return;
+    } else {
+      setAmount(val);
+      setError("");
+    }
+  };
 
-    return () => clearInterval(timer);
-  }, []);
-
-  const handleClick = (e) => {
+  const sendTxn = async (e) => {
     e.preventDefault();
     setIsClicked(false);
   };
@@ -37,18 +34,22 @@ const Modal = ({ purpose, setIsClicked }) => {
             X
           </div>
           <h1 className=" text-xl">Enter Contribution Amount</h1>
-          <form id="otp">
+          <form id="amount">
             <div className="w-[80%] mx-auto">
               <input
-                type="text"
+                type="number"
                 required
                 className="w-full px-4 py-3 text-black border-slate-500 border-2 rounded-md"
-              ></input>
+                value={amount}
+                min={0}
+                onChange={handleChange}
+              />
+              {error!==""}<p>{error}</p>
             </div>
             <div className="w-[6rem] mx-auto">
               <button
                 className=" mt-4 w-full rounded-md p-2 mb-5 text-white font-bold bg-blue-700 hover:bg-blue-400"
-                onClick={handleClick}
+                onClick={sendTxn}
               >
                 Contribute
               </button>

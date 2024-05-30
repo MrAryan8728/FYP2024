@@ -76,7 +76,7 @@ export default function Page({ params }) {
     }
   };
 
-  const contribute = async () => {
+  const contribute = () => {
     setIsClicked(true);
   };
 
@@ -147,7 +147,7 @@ export default function Page({ params }) {
                 <span className="font-bold text-2xl  text-first">
                   Amount Raised :{" "}
                 </span>
-                <span className="text-xl">{targetAmt} wei</span>
+                <span className="text-xl">{amtraised} wei</span>
               </div>
             </div>
             <div className=" my-7 p-4">
@@ -187,7 +187,7 @@ export default function Page({ params }) {
               </button>
             )} */}
           </div>
-          {isClicked && <Modal setIsClicked={setIsClicked}/>}
+          {isClicked && <Modal setIsClicked={setIsClicked} targetAmt={targetAmt} amtraised={amtraised}/>}
         </div>
       </div>
     </div>

@@ -27,7 +27,8 @@ const page = () => {
 
     let temp = [];
     allCamps.map((camp) => {
-      if (timeDiff(camp.args.deadline) > 0) temp.push(camp);
+      // if (timeDiff(camp.args.deadline) > 0) 
+        temp.push(camp);
     });
     setData(temp);
   };
@@ -45,11 +46,11 @@ const page = () => {
       ) : (
         data.map((val, index) => {
           return (
-            <Link href={`/campaign/${val.args.campaignAddress}`} key={index}>
+            <Link href={`/campaign/${val.args.details.campaignAddress}`} key={index}>
               <Card
-                name={val.args.title}
-                desc={val.args.desc}
-                imgURI={val.args.imgURI}
+                name={val.args.details.title}
+                desc={val.args.details.desc}
+                imgURI={val.args.details.imgURI}
                 deadline={val.args.deadline}
               />
             </Link>

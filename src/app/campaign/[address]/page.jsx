@@ -1,11 +1,11 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-// import Campaign from "../../../artifacts/contracts/Campaign.sol/Campaign.json";
 import Campaign from "../../../../artifacts/contracts/Campaign.sol/Campaign.json";
 import { Contract, JsonRpcProvider } from "ethers";
 import { useRouter } from "next/navigation";
-import Modal from "../../../components/Modal"
+import Modal from "../../../components/Modal";
+// import {remainingHours} from "../../../utils/calculation"
 
 export default function Page({ params }) {
   const [title, setTitle] = useState("");
@@ -17,6 +17,7 @@ export default function Page({ params }) {
   const [owner, setOwner] = useState("");
   const [address, setAddress] = useState("");
   const [isClicked, setIsClicked] = useState(false);
+  const [deadline, setDeadline] = useState(0);
 
   const RPC = process.env.NEXT_PUBLIC_RPC_URL;
   const provider = new JsonRpcProvider(RPC);
@@ -39,6 +40,8 @@ export default function Page({ params }) {
     setContributors(parseInt(campContributors));
     const ownerAdd = await contract.owner();
     setOwner(ownerAdd);
+    const _deadline = await contract.deadline();
+    setDeadline(_deadline);
   };
 
   let ethereum = useRef(null);
@@ -78,6 +81,35 @@ export default function Page({ params }) {
 
   const contribute = () => {
     setIsClicked(true);
+  };
+
+  const timeDiff = (deadline) => {
+    const date = BigInt(new Date().getTime());
+    let diff = BigInt(date - deadline);
+    return parseInt(diff);
+  };
+
+  const remainingSeconds = (deadline) => {
+    return timeDiff(BigInt(deadline)) / 1000;
+  };
+
+  const remainingMinutes = (deadline) => {
+    return remainingSeconds(BigInt(deadline)) / 60;
+  };
+
+  const remainingHours = (deadline) => {
+    return remainingMinutes(BigInt(deadline)) / 60;
+  };
+
+  const abs = (n) => (n < 0n) ? -n : n;
+
+  const remainingDays = (deadline) => {
+    let _deadline = BigInt(deadline) * BigInt(1000);
+    const date = BigInt(new Date().getTime());
+    console.log(date + " " + _deadline);
+    let diff = BigInt(date - _deadline) / BigInt(1000);
+    console.log(diff / BigInt(24 * 3600));
+    return parseInt(abs(diff / BigInt(24 * 3600)));
   };
 
   useEffect(() => {
@@ -158,7 +190,10 @@ export default function Page({ params }) {
               <h1> contributors </h1>
             </div>
             <div className=" my-7 p-4">
-              <h1 className=" font-bold text-2xl text-second"> 52 </h1>
+              <h1 className=" font-bold text-2xl text-second">
+                {" "}
+                {remainingDays(deadline)}{" "}
+              </h1>
               <h1> days to go </h1>
             </div>
             <button
@@ -178,7 +213,7 @@ export default function Page({ params }) {
               </button>
             )}
             {/* {address === owner && (
-              <button
+              // <button
                 className=" bg-primary text-white font-bold px-9 w-full py-3 rounded"
                 onClick={contribute}
               >
@@ -187,7 +222,14 @@ export default function Page({ params }) {
               </button>
             )} */}
           </div>
-          {isClicked && <Modal setIsClicked={setIsClicked} targetAmt={targetAmt} amtraised={amtraised} campaignAddress={campaignAddress}/>}
+          {isClicked && (
+            <Modal
+              setIsClicked={setIsClicked}
+              targetAmt={targetAmt}
+              amtraised={amtraised}
+              campaignAddress={campaignAddress}
+            />
+          )}
         </div>
       </div>
     </div>

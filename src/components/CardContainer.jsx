@@ -17,21 +17,10 @@ const CardContainer = () => {
     DataLoader();
   }, []);
 
-  const timeDiff = (deadline) => {
-    const date = new Date().getTime();
-    let diff = parseInt(deadline) - date;
-    return diff;
-  };
-
   const DataLoader = async () => {
     const getAllCampaigns = contract.filters.campaignCreated();
     const allCamps = await contract.queryFilter(getAllCampaigns);
     console.log(allCamps);
-    // allCamps.map((e) => console.log(e.args.title));
-    // allCamps.map((e) => console.log(e.args.details.title));
-    // setData(allCamps);
-    // console.log(allCamps);
-    // console.log(contract);
 
     let temp = [];
 
@@ -70,11 +59,13 @@ const CardContainer = () => {
           })
         )}
       </div>
-      <a href="/Campaigns" target="_blank">
-        <h1 className=" text-center font-bold mt-5 text-gray-600">
-          See More...
-        </h1>
-      </a>
+      {data.length > 4 && (
+        <a href="/Campaigns" target="_blank">
+          <h1 className=" text-center font-bold mt-5 text-gray-600">
+            See More...
+          </h1>
+        </a>
+      )}
     </div>
   );
 };

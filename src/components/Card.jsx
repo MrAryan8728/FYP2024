@@ -1,26 +1,13 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import ProgressBar from "@ramonak/react-progress-bar";
 
 const Card = (props) => {
-  useEffect(() => {
-    const date = new Date().getTime();
-    let timeDiff = getDeadline(props.deadline) - date;
-    timeDiff /= 1000;
-    const daysRemaining = timeDiff / (24 * 60 * 60);
-    const hoursRemaining = timeDiff / (60 * 60);
-    console.log(daysRemaining);
-    console.log(hoursRemaining);
-  }, []);
-
   const formatDate = (deadline) => {
-    const date = new Date(getDeadline(deadline));
-    return date.toLocaleString();
-  };
-
-  const getDeadline = (deadline) => {
-    return Number(BigInt(deadline) * BigInt(1000));
+    const deadlineInMillis = Number(BigInt(deadline)*BigInt(1000));
+    const date = new Date(deadlineInMillis);
+    return date.toLocaleString('en-IN');
   };
 
   const truncateText = (text, maxLen) => {

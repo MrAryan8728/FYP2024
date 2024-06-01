@@ -22,33 +22,38 @@ const Page = () => {
 
     let temp = [];
     allCamps.map((camp) => {
-      // if (timeDiff(camp.args.deadline) > 0) 
-        temp.push(camp);
+      // if (timeDiff(camp.args.deadline) > 0)
+      temp.push(camp);
     });
     setData(temp);
   };
-  
+
   return (
-    <div className=" grid grid-cols-4 gap-3">
-      {data.length === 0 ? (
-        <div className=" col-span-4">
-          <Shimmer />
+    <>
+      {data.length === 0 && (
+        <div className="w-full text-center text-gray-500">
+          No campaign to display
         </div>
-      ) : (
-        data.map((val, index) => {
-          return (
-            <Link href={`/campaign/${val.args.details.campaignAddress}`} key={index}>
-              <Card
-                name={val.args.details.title}
-                desc={val.args.details.desc}
-                imgURI={val.args.details.imgURI}
-                deadline={val.args.deadline}
-              />
-            </Link>
-          );
-        })
       )}
-    </div>
+      <div className=" grid grid-cols-4 gap-3">
+        {data.length > 0 &&
+          data.map((val, index) => {
+            return (
+              <Link
+                href={`/campaign/${val.args.details.campaignAddress}`}
+                key={index}
+              >
+                <Card
+                  name={val.args.details.title}
+                  desc={val.args.details.desc}
+                  imgURI={val.args.details.imgURI}
+                  deadline={val.args.deadline}
+                />
+              </Link>
+            );
+          })}
+      </div>
+    </>
   );
 };
 

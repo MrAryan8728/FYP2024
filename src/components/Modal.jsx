@@ -46,6 +46,7 @@ const Modal = ({ setIsClicked, targetAmt, amtraised, campaignAddress }) => {
       await tx.wait();
 
       toast.success("Transaction successful");
+      location.reload();
       
     } catch (e) {
       toast.error(e.message || "Transaction failed");

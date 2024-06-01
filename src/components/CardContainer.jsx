@@ -34,14 +34,16 @@ const CardContainer = () => {
   return (
     <div className="my-12">
       <h1 className=" text-center font-semibold text-3xl text-gray-500 my-12">
-        Our Recent <span className="font-bold text-primary">Campaigns</span>
+        Currently running{" "}
+        <span className="font-bold text-primary">Campaigns</span>
       </h1>
+      {data.length === 0 && (
+        <div className="w-full text-center text-gray-500">
+          No campaign to display
+        </div>
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[75rem] mx-auto">
-        {data.length === 0 ? (
-          <div className=" col-span-4">
-            <Shimmer size={data.length} />
-          </div>
-        ) : (
+        {data.length > 0 &&
           data.map((val, index) => {
             return (
               <Link
@@ -57,8 +59,7 @@ const CardContainer = () => {
                 />
               </Link>
             );
-          })
-        )}
+          })}
       </div>
       {data.length > 4 && (
         <a href="/Campaigns" target="_blank">

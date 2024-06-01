@@ -8,19 +8,19 @@ contract CampaignFactory {
     address[] public deployedCampaigns;
 
     struct CampaignDetails {
-    address campaignAddress;
-    string title;
-    string desc;
-    string imgURI;
-    uint targetAmt;
-}
+        address campaignAddress;
+        string title;
+        string desc;
+        string imgURI;
+        uint targetAmt;
+    }
 
     event campaignCreated(
-    string indexed category,
-    string indexed country,
-    uint indexed deadline,
-    CampaignDetails details
-);
+        string indexed category,
+        string indexed country,
+        uint indexed deadline,
+        CampaignDetails details
+    );
 
     function createCampaign(
         string memory title,
@@ -49,16 +49,16 @@ contract CampaignFactory {
             n2
         );
 
-        address campaignAddress=address(new_camp);
+        address campaignAddress = address(new_camp);
         deployedCampaigns.push(address(new_camp));
 
         CampaignDetails memory details = CampaignDetails({
-        campaignAddress: campaignAddress,
-        title: title,
-        desc: desc,
-        imgURI: imgURI,
-        targetAmt: targetAmt
-    });
+            campaignAddress: campaignAddress,
+            title: title,
+            desc: desc,
+            imgURI: imgURI,
+            targetAmt: targetAmt
+        });
         emit campaignCreated(category, country, _deadline, details);
     }
 }
@@ -92,15 +92,32 @@ contract Campaign {
     uint n1;
     uint n2;
 
-    event contributed(
-        address indexed currentContributor,
-        uint indexed amount,
-        uint indexed timestamp
+    event ContributionAdded(
+        address indexed contributor,
+        uint amount,
+        uint timestamp
     );
-    event auditReportSubmission(
-        uint indexed rNo,
-        address indexed sender,
-        uint indexed timestamp
+    event AuditReportSubmitted(
+        address indexed owner,
+        string message,
+        uint timestamp
+    );
+    event VoteRegistered(
+        address indexed voter,
+        uint voteIndex,
+        string message,
+        uint timestamp
+    );
+    event InstallmentDisbursed(
+        address indexed campaign,
+        uint amount,
+        string message,
+        uint timestamp
+    );
+    event CampaignClosed(
+        address indexed campaign,
+        string message,
+        uint timestamp
     );
 
     constructor(
@@ -135,8 +152,8 @@ contract Campaign {
         targetAchieved = false;
         auditReport = false;
         auditReportCount = 0;
-        n1=_n1;
-        n2=_n2;
+        n1 = _n1;
+        n2 = _n2;
     }
 
     // function modifiers :-
@@ -160,8 +177,11 @@ contract Campaign {
 
     function auditReportSubmitted() public {
         auditReport = true;
+        string memory message = auditReportCount == 0
+            ? "First Audit Report Submitted"
+            : "Second Audit Report Submitted";
+        emit AuditReportSubmitted(owner, message, block.timestamp);
         auditReportCount++;
-        emit auditReportSubmission(auditReportCount, owner, block.timestamp);
     }
 
     function contribute() public payable {
@@ -180,7 +200,7 @@ contract Campaign {
         contribution[msg.sender] += msg.value;
         amtraised += msg.value;
         if (amtraised == targetAmt) targetAchieved = true;
-        emit contributed(msg.sender, msg.value, block.timestamp);
+        emit ContributionAdded(msg.sender, msg.value, block.timestamp);
     }
 
     function vote(uint currentVote) public {
@@ -192,6 +212,10 @@ contract Campaign {
             "You are not an approver"
         );
         require(!hasVoted[votingInd][msg.sender], "You have already voted");
+        string memory message = votingInd == 0
+            ? "Second installment vote registered"
+            : "Third installment vote registered";
+        emit VoteRegistered(msg.sender, votingInd+1, message, block.timestamp);
         votes[votingInd][currentVote]++;
         hasVoted[votingInd][msg.sender] = true;
     }
@@ -203,8 +227,8 @@ contract Campaign {
             uint reqdContribution = (targetAmt * 70) / 100;
             if (amtraised >= reqdContribution) {
                 uint installment1 = (amtraised * n1) / 100;
-                uint installment2=(amtraised * n2)/100;
-                uint installment3 = amtraised-(installment1+installment2);
+                uint installment2 = (amtraised * n2) / 100;
+                uint installment3 = amtraised - (installment1 + installment2);
                 installments[0] = installments[1] = installment1;
                 installments[2] = installment3;
                 owner.transfer(installments[ind]);
@@ -212,6 +236,12 @@ contract Campaign {
                 disbursed += installments[ind];
                 amtraised -= installments[ind];
                 ind++;
+                emit InstallmentDisbursed(
+                    getContractAddress(),
+                    installments[ind],
+                    "First installment disbursed",
+                    block.timestamp
+                );
             } else reimburse("Disbursable amount not reached");
         } else {
             uint yes = votes[votingInd][0];
@@ -223,8 +253,24 @@ contract Campaign {
                 balances[owner] += installments[ind];
                 disbursed += installments[ind];
                 amtraised -= installments[ind];
+                string memory message = ind == 1
+                    ? "Second installment disbursed"
+                    : "Third installment disbursed";
+                emit InstallmentDisbursed(
+                    getContractAddress(),
+                    installments[ind],
+                    message,
+                    block.timestamp
+                );
                 ind++;
-                if (ind == 3) isCampaignOpen = false;
+                if (ind == 3) {
+                    isCampaignOpen = false;
+                    emit CampaignClosed(
+                        getContractAddress(),
+                        "Campaign Closed",
+                        block.timestamp
+                    );
+                }
                 votingInd++; // this time, voting was succesful, so move on the next index to accomodate next time voting
                 auditReport = false;
             } else reimburse("Lack of majority.");
@@ -246,5 +292,10 @@ contract Campaign {
         }
         amtraised = 0;
         isCampaignOpen = false;
+        emit CampaignClosed(
+            getContractAddress(),
+            "Campaign Closed",
+            block.timestamp
+        );
     }
 }

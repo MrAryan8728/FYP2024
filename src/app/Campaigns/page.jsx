@@ -35,7 +35,7 @@ const Page = () => {
           No campaign to display
         </div>
       )}
-      <div className=" grid grid-cols-4 gap-3">
+      <div className=" grid grid-cols-3 gap-3">
         {data.length > 0 &&
           data.map((val, index) => {
             return (
@@ -48,6 +48,7 @@ const Page = () => {
                   desc={val.args.details.desc}
                   imgURI={val.args.details.imgURI}
                   deadline={val.args.deadline}
+                  campaignAddress={val.args.details.campaignAddress}
                 />
               </Link>
             );

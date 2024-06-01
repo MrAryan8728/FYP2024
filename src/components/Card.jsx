@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import ProgressBar from "@ramonak/react-progress-bar";
 import { Contract, JsonRpcProvider } from "ethers";
-import Campaign from "../../artifacts/contracts/Campaign.sol/Campaign.json";
+import Campaign from "../../artifacts/contracts/Campaign.sol/Campaign.json"
 
 const Card = (props) => {
   const [progress, setProgress] = useState(0);

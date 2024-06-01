@@ -34,7 +34,7 @@ const Card = (props) => {
     return text.slice(0, maxLen) + "...";
   };
   return (
-    <div className="w-[90%] rounded-md p-1 h-[500px] bg-gray-200 text-gray-600 hover:shadow-primary hover:shadow-xl hover:-translate-y-4 hover:transition-all hover:duration-500 flex-row box-border">
+    <div className="w-[90%] rounded-md p-1 h-[400px] bg-gray-200 text-gray-600 hover:shadow-primary hover:shadow-xl hover:-translate-y-4 hover:transition-all hover:duration-500 flex-row box-border">
       <div className="w-[100%] h-[40%] bg-[#OOFFFFFF] overflow-hidden relative rounded-2xl">
         <Image
           src={`https://ipfs.io/ipfs/${props.imgURI}`}
@@ -43,7 +43,7 @@ const Card = (props) => {
         />
       </div>
       <div className="px-5">
-        <h1 className=" text-xl font-bold text-center mb-3">
+        <h1 className=" text-xl font-bold text-center my-3">
           {truncateText(props.name, 20)}
         </h1>
         <p className=" font-normal text-md mb-8">
@@ -56,12 +56,12 @@ const Card = (props) => {
           baseBgColor="#ffffff"
           borderRadius="5px"
         />
-        <div>Deadline : {formatDate(props.deadline)}</div>
         <div className=" flex justify-center items-center">
-          <button className=" font-bold text-xl bg-primary px-5 py-2 text-white rounded-lg my-3 hover:bg-secondary">
+          <button className=" font-bold text-xl bg-primary px-5 py-2 text-white rounded-lg mt-5 hover:bg-secondary">
             Contribute
           </button>
         </div>
+        <div className=" mt-5"><span className=" font-bold">Deadline</span> : {formatDate(props.deadline)}</div>
       </div>
     </div>
   );

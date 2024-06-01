@@ -11,8 +11,8 @@ export default function Page({ params }) {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [imgURI, setImgURI] = useState("");
-  const [targetAmt, setTargetAmt] = useState();
-  const [amtraised, setAmtraised] = useState();
+  const [targetAmt, setTargetAmt] = useState(0);
+  const [amtraised, setAmtraised] = useState(0);
   const [contributors, setContributors] = useState();
   const [owner, setOwner] = useState("");
   const [address, setAddress] = useState("");
@@ -187,7 +187,7 @@ export default function Page({ params }) {
               </button>
             )} */}
           </div>
-          {isClicked && <Modal setIsClicked={setIsClicked} targetAmt={targetAmt} amtraised={amtraised}/>}
+          {isClicked && <Modal setIsClicked={setIsClicked} targetAmt={targetAmt} amtraised={amtraised} campaignAddress={campaignAddress}/>}
         </div>
       </div>
     </div>

@@ -1,13 +1,31 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import ProgressBar from "@ramonak/react-progress-bar";
+import { Contract, JsonRpcProvider } from "ethers";
+import Campaign from "../../artifacts/contracts/Campaign.sol/Campaign.json";
 
 const Card = (props) => {
+  const [progress, setProgress] = useState(0);
+  const campaignAddress = props.campaignAddress;
+  const RPC = process.env.NEXT_PUBLIC_RPC_URL;
+  const provider = new JsonRpcProvider(RPC);
+  const contract = new Contract(campaignAddress, Campaign.abi, provider);
+
+  const update = async () => {
+    const amtraised = await contract.amtraised();
+    const targetAmt = await contract.targetAmt();
+    const percentage = (Number(amtraised) * 100) / Number(targetAmt);
+    setProgress(percentage);
+  };
+  useEffect(() => {
+    update();
+  }, []);
+
   const formatDate = (deadline) => {
-    const deadlineInMillis = Number(BigInt(deadline)*BigInt(1000));
+    const deadlineInMillis = Number(BigInt(deadline) * BigInt(1000));
     const date = new Date(deadlineInMillis);
-    return date.toLocaleString('en-IN');
+    return date.toLocaleString("en-IN");
   };
 
   const truncateText = (text, maxLen) => {
@@ -32,7 +50,7 @@ const Card = (props) => {
           {truncateText(props.desc, 100)}
         </p>
         <ProgressBar
-          completed={60}
+          completed={progress}
           bgColor="#3437eb"
           animateOnRender={true}
           baseBgColor="#ffffff"

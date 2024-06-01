@@ -53,6 +53,7 @@ const CardContainer = () => {
                   desc={val.args.details.desc}
                   imgURI={val.args.details.imgURI}
                   deadline={val.args.deadline}
+                  campaignAddress={val.args.details.campaignAddress}
                 />
               </Link>
             );

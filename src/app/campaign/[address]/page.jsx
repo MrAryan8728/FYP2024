@@ -79,7 +79,8 @@ export default function Page({ params }) {
       const account = await provider.getSigner();
       const Address = await account.getAddress();
       // check balance
-      setAddress(Address);
+      // setAddress(Address);
+      setAddress(campaignAddress)
       localStorage.setItem("account", Address);
       toast.success("Wallet Connected sucessfully");
     } catch (e) {
@@ -142,7 +143,8 @@ export default function Page({ params }) {
     // } else getCampaignInfo();
     let acc = localStorage.getItem("account");
     if (acc === null) acc = "";
-    setAddress(acc);
+    setAddress(campaignAddress)
+    // setAddress(acc);
     getCampaignInfo();
     // getAllEvents();
   }, []);
@@ -164,7 +166,7 @@ export default function Page({ params }) {
           <div>
             <span>
               <span className="font-bold text-2xl  text-first">
-                Current Address :{" "}
+                Campaign Address :{" "}
               </span>
               <span className="text-lg">{address}</span>
             </span>

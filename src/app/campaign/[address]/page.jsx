@@ -44,6 +44,20 @@ export default function Page({ params }) {
     setDeadline(_deadline);
   };
 
+  const getAllEvents = async () => {
+    contract.events
+      .allEvents()
+      .on("data", (event) => {
+        console.log("Event:", event.event, event.args);
+      })
+      .on("error", console.error);
+
+    // Display events in sequential order
+    events.forEach((event) => {
+      console.log(`${event.event}: ${JSON.stringify(event.args)}`);
+    });
+  };
+
   let ethereum = useRef(null);
 
   const connect = async () => {
@@ -101,14 +115,12 @@ export default function Page({ params }) {
     return remainingMinutes(BigInt(deadline)) / 60;
   };
 
-  const abs = (n) => (n < 0n) ? -n : n;
+  const abs = (n) => (n < 0n ? -n : n);
 
   const remainingDays = (deadline) => {
     let _deadline = BigInt(deadline) * BigInt(1000);
     const date = BigInt(new Date().getTime());
-    console.log(date + " " + _deadline);
     let diff = BigInt(date - _deadline) / BigInt(1000);
-    console.log(diff / BigInt(24 * 3600));
     return parseInt(abs(diff / BigInt(24 * 3600)));
   };
 
@@ -132,6 +144,7 @@ export default function Page({ params }) {
     if (acc === null) acc = "";
     setAddress(acc);
     getCampaignInfo();
+    // getAllEvents();
   }, []);
 
   return (
@@ -203,7 +216,7 @@ export default function Page({ params }) {
               {" "}
               Contribute{" "}
             </button>
-            {address !== owner && (
+            {/* {address !== owner && (
               <button
                 className=" bg-primary text-white font-bold px-9 w-full py-3 rounded mb-2"
                 onClick={contribute}
@@ -211,7 +224,7 @@ export default function Page({ params }) {
                 {" "}
                 Vote{" "}
               </button>
-            )}
+            )} */}
             {/* {address === owner && (
               // <button
                 className=" bg-primary text-white font-bold px-9 w-full py-3 rounded"

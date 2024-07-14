@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 
 export async function POST(request) {
-  try {
+  try { 
     const data = await request.formData();
     const file = data.get("file");
     data.append("file", file);
